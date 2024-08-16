@@ -8,3 +8,8 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+-keep class com.fooddeliveryapp.BuildConfig { *; }
+-keep class com.google.errorprone.annotations.** { *; }
+-keep class com.google.crypto.tink.** { *; }
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.crypto.tink.**
