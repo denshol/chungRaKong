@@ -183,7 +183,7 @@ const MainStack = () => {
     <Stack.Navigator
       initialRouteName="Home"
       screenOptions={({navigation}) => ({
-        headerRight: () => <HeaderRight navigation={navigation} />,
+        // headerRight: () => <HeaderRight navigation={navigation} />,
       })}>
       <Stack.Screen
         name="Home"

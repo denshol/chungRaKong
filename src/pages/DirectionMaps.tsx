@@ -43,7 +43,7 @@ const DirectionsMap = () => {
               if (infowindow.getMap()) {
                 infowindow.close();
               } else {
-                infowindow.open(map, marker);ㅊㅇ
+                infowindow.open(map, marker);
               }
             });
           }

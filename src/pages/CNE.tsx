@@ -20,7 +20,7 @@ const data = [
     title: '미래융합 코딩교육',
     description: '4주 단기 완성!',
     image: require('../assets/coding.png'),
-    poster: require('../assets/poster/futureCoding.jpg'),
+    poster: require('../assets/poster/cne_coding.jpg'),
     timetable: '토요일: 5:00 PM - 6:00 PM',
     curriculum:
       '1주차: 스크래치 코딩\n2주차: 스크래치 + 엔트리 코딩\n3주차: 로봇융합 코딩\n4주차: 프로젝트',
@@ -28,7 +28,7 @@ const data = [
       {
         name: '김준혁',
         introduction: '코딩 전문가로 2년 경력을 가진 교육 전문가입니다.',
-        profileImage: require('../assets/profiles/splsh.png'),
+        // profileImage: require('../assets/profiles/splsh.png'),
       },
     ],
   },
@@ -45,7 +45,7 @@ const data = [
         name: 'Jane Smith',
         introduction:
           'Renowned Artist and Art Instructor with a passion for teaching kids.',
-        profileImage: require('../assets/profiles/splsh.png'),
+        // profileImage: require('../assets/profiles/splsh.png'),
       },
     ],
   },
@@ -54,7 +54,7 @@ const data = [
     title: 'ENGLISH SPEECH CONTEST',
     description: '실력이 출중한 강사님들과 회화능력을 키워보세요!',
     image: require('../assets/speech.png'),
-    poster: require('../assets/poster/speechContest.webp'),
+    poster: require('../assets/poster/cne.speech.jpg'),
     timetable: '토요일: 10:00 AM - 1:00 PM',
     curriculum: '발표 기법, 발음 교정, 무대 연습',
     instructors: [
@@ -77,7 +77,7 @@ ART NEWS Magazine (2023)
 Exhibition 
 Room gallery, solo exhibition (2024)
 `,
-        profileImage: require('../assets/profiles/splsh.png'),
+        // profileImage: require('../assets/profiles/splsh.png'),
       },
       {
         name: 'Alice Johnson',
@@ -97,7 +97,7 @@ Huia Fine Arts Fund Project (Aug 2021)
 Exhibition 
 Room gallery, solo exhibition (2024)
 `,
-        profileImage: require('../assets/profiles/splsh.png'),
+        // profileImage: require('../assets/profiles/splsh.png'),
       },
     ],
   },
