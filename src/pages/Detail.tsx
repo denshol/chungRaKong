@@ -1,41 +1,33 @@
-// Detail.js
 import React, {useState} from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Image,
+  StyleSheet,
   ScrollView,
+  Dimensions,
+  TouchableOpacity,
   Modal,
-  Pressable,
-  Linking,
 } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import {useNavigation} from '@react-navigation/native';
+
+const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const Detail = ({route}) => {
   const {title, description, poster, timetable, curriculum, instructors} =
     route.params;
-  const [isImageModalVisible, setImageModalVisible] = useState(false);
-  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
 
-  const toggleImageModal = () => {
-    setImageModalVisible(!isImageModalVisible);
-  };
-
-  const handleContactPress = () => {
-    Linking.openURL('tel:01068765570');
-  };
-
-  const handleBoardPress = () => {
-    navigation.navigate('Board', {title});
+  const openModal = image => {
+    setCurrentImage(image);
+    setModalVisible(true);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Pressable onPress={toggleImageModal}>
+      <TouchableOpacity onPress={() => openModal(poster)}>
         <Image source={poster} style={styles.poster} />
-      </Pressable>
+      </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
       <Text style={styles.sectionTitle}>강사 소개</Text>
@@ -44,9 +36,26 @@ const Detail = ({route}) => {
           <Image source={instructor.profileImage} style={styles.profileImage} />
           <View style={styles.instructorTextContainer}>
             <Text style={styles.instructorName}>{instructor.name}</Text>
-            <Text style={styles.instructorIntroduction}>
-              {instructor.introduction}
-            </Text>
+            {typeof instructor.introduction === 'string' ? (
+              <Text style={styles.instructorIntroduction}>
+                {instructor.introduction}
+              </Text>
+            ) : (
+              <View>
+                <Text style={styles.instructorIntroduction}>
+                  {instructor.introduction.text}
+                </Text>
+                {instructor.introduction.image && (
+                  <TouchableOpacity
+                    onPress={() => openModal(instructor.introduction.image)}>
+                    <Image
+                      source={instructor.introduction.image}
+                      style={styles.introductionImage}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
           </View>
         </View>
       ))}
@@ -55,26 +64,22 @@ const Detail = ({route}) => {
       <Text style={styles.sectionTitle}>커리큘럼</Text>
       <Text style={styles.content}>{curriculum}</Text>
 
-      <Pressable style={styles.contactButton} onPress={handleContactPress}>
-        <Text style={styles.contactButtonText}>문의하기</Text>
-      </Pressable>
-
-      {/* <Pressable style={styles.boardButton} onPress={handleBoardPress}>
-        <Text style={styles.boardButtonText}>게시판으로 이동</Text>
-      </Pressable> */}
-
       <Modal
-        visible={isImageModalVisible}
+        animationType="fade"
         transparent={true}
-        onRequestClose={toggleImageModal}>
-        <ImageViewer
-          imageUrls={[{url: '', props: {source: poster}}]}
-          enableSwipeDown={true}
-          onSwipeDown={toggleImageModal}
-        />
-        <Pressable style={styles.closeButton} onPress={toggleImageModal}>
-          <Text style={styles.closeButtonText}>닫기</Text>
-        </Pressable>
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.centeredView}>
+          <TouchableOpacity
+            style={styles.modalBackground}
+            onPress={() => setModalVisible(false)}>
+            <Image
+              source={currentImage}
+              style={styles.fullScreenImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       </Modal>
     </ScrollView>
   );
@@ -83,7 +88,6 @@ const Detail = ({route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#f8f8f8',
   },
   poster: {
@@ -96,29 +100,32 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    padding: 16,
     color: '#333',
   },
   description: {
     fontSize: 16,
+    padding: 16,
+    paddingTop: 0,
     color: '#666',
-    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    padding: 16,
+    paddingBottom: 8,
     color: '#333',
   },
   content: {
     fontSize: 16,
+    padding: 16,
+    paddingTop: 0,
     color: '#666',
   },
   instructorContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
+    padding: 16,
+    alignItems: 'flex-start',
   },
   profileImage: {
     width: 80,
@@ -132,49 +139,35 @@ const styles = StyleSheet.create({
   instructorName: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 8,
     color: '#333',
   },
   instructorIntroduction: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
   },
-  closeButton: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 10,
-    borderRadius: 10,
+  introductionImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    marginTop: 10,
   },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  contactButton: {
-    backgroundColor: '#04ca5b',
-    padding: 15,
-    borderRadius: 10,
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
-  contactButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  boardButton: {
-    backgroundColor: '#3498db',
-    padding: 15,
-    borderRadius: 10,
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    width: '100%',
+    height: '100%',
   },
-  boardButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+  fullScreenImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
   },
 });
 

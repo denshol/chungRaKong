@@ -6,8 +6,8 @@ import {View, Text, StyleSheet, FlatList} from 'react-native';
 const notices = [
   {
     id: '1',
-    title: '1번 공지사항',
-    description: '내용',
+    title: '문화와 교육을 한번에 즐기며배울수있는 공간입니다.',
+    description: '다양한 문화와 교육을 한번에 즐기며 배울수 있는 공간입니다.',
   },
   // {
   //   id: '2',

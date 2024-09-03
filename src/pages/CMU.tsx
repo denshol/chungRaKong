@@ -44,7 +44,7 @@ const data = [
     description: '노래 배워보세요!',
     image: require('../assets/vocallesson.png'),
     poster: require('../assets/vocallesson.png'),
-    timetable: '토요일: 11:00 AM - 12:00 AM',
+    timetable: '토요일: 11:30 AM - 12:30 AM',
     curriculum:
       '1개월차 : 발성 연습\n2개월차: 맞춤곡으로 실습\n3개월차 : 버스킹',
     instructors: [
@@ -66,7 +66,7 @@ const data = [
     description: '바이올린 레슨입니다!',
     image: require('../assets/violin.png'),
     poster: require('../assets/poster/violin_lesson.png'),
-    timetable: '토요일: 11:00 AM - 12:00 AM',
+    timetable: '토요일: 12:30 AM - 01:30 PM',
     // curriculum:
     //   '1개월차 : 발성 연습\n2개월차: 맞춤곡으로 실습\n3개월차 : 버스킹',
     instructors: [
