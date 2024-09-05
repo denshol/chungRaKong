@@ -34,6 +34,7 @@ import {useState} from 'react';
 import {useIsFocused, useNavigation} from '@react-navigation/core';
 import DirectionsMap from './src/pages/DirectionMaps';
 import ProgramSchedule from './src/pages/ProgramSchedules';
+import CombinedCNECMU from './src/pages/CombinedCNECMU';
 
 export type LoggedInParamList = {
   MainHome: undefined;
@@ -54,6 +55,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Settings: undefined;
   Detail: undefined;
+  CombinedCNECMU: undefined;
 };
 
 const Tab = createBottomTabNavigator<LoggedInParamList>();
@@ -181,7 +183,7 @@ const MainStack = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="CombinedCNECMU"
       screenOptions={({navigation}) => ({
         // headerRight: () => <HeaderRight navigation={navigation} />,
       })}>
@@ -217,6 +219,11 @@ const MainStack = () => {
         name="SignUp"
         component={SignUp}
         options={{title: '회원가입'}}
+      />
+      <Stack.Screen
+        name="CombinedCNECMU"
+        component={CombinedCNECMU}
+        options={{title: '청라콩문화센터'}}
       />
       <Stack.Screen
         name="CNE"

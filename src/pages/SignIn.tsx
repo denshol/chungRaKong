@@ -19,6 +19,12 @@ import Config from 'react-native-config';
 import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import {setUser} from '../slices/user';
+import NaverLogin from '@react-native-seoul/naver-login';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import KakaoLogins from '@react-native-seoul/kakao-login';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -95,6 +101,49 @@ const SignIn = ({navigation}: SignInScreenProps) => {
   const toFindPassword = useCallback(() => {
     navigation.navigate('FindPassword');
   }, [navigation]);
+
+  const naverLogin = async () => {
+    try {
+      const {accessToken} = await NaverLogin.login();
+      // 네이버 로그인 성공 후 처리
+      console.log(accessToken);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const googleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      // 구글 로그인 성공 후 처리
+      console.log(userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // 사용자가 로그인을 취소한 경우
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // 이미 로그인 진행 중
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // Play services가 사용 불가능한 경우
+      } else {
+        // 기타 에러
+      }
+    }
+  };
+
+  const kakaoLogin = async () => {
+    try {
+      const token = await KakaoLogins.login();
+      // 카카오 로그인 성공 후 처리
+      console.log(token);
+    } catch (e) {
+      if (e.code === 'E_CANCELLED_OPERATION') {
+        console.log('Login Cancel');
+      } else {
+        console.log(`Login Fail(code:${e.code})`, e);
+      }
+    }
+  };
 
   const canGoNext = email && password;
 
@@ -191,6 +240,23 @@ const SignIn = ({navigation}: SignInScreenProps) => {
             </Pressable>
           </View>
         </View>
+        <View style={styles.socialLoginButtons}>
+          <Pressable
+            style={[styles.socialButton, styles.naverButton]}
+            onPress={naverLogin}>
+            <Text style={styles.socialButtonText}>네이버 로그인</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.socialButton, styles.googleButton]}
+            onPress={googleLogin}>
+            <Text style={styles.socialButtonText}>구글 로그인</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.socialButton, styles.kakaoButton]}
+            onPress={kakaoLogin}>
+            <Text style={styles.socialButtonText}>카카오 로그인</Text>
+          </Pressable>
+        </View>
       </View>
     </DismissKeyboardView>
   );
@@ -278,6 +344,31 @@ const styles = StyleSheet.create({
   },
   signUpButtonText: {
     color: '#04ca5b',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  socialLoginButtons: {
+    width: '100%',
+    marginTop: 20,
+  },
+  socialButton: {
+    paddingVertical: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    width: '100%',
+  },
+  naverButton: {
+    backgroundColor: '#1EC800',
+  },
+  googleButton: {
+    backgroundColor: '#DB4437',
+  },
+  kakaoButton: {
+    backgroundColor: '#FEE500',
+  },
+  socialButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },

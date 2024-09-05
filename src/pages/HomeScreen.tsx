@@ -10,23 +10,24 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
-          <Text style={styles.subtitle}>교육과 문화를 한번에</Text>
-          <Text style={styles.title}>청라콩</Text>
+          {/* <Text style={styles.subtitle}>교육과 문화를 한번에</Text>
+          <Text style={styles.title}>청라콩</Text> */}
         </View>
-        {/* <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
-          style={styles.menuIcon}>
-          <Icon name="menu" size={30} color="#04ca5b" />
-        </TouchableOpacity> */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('SignIn')}
+          style={styles.authButton}>
+          <Text style={styles.authButtonText}>로그인</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.logoContainer}>
+      <TouchableOpacity
+        style={styles.logoContainer}
+        onPress={() => navigation.navigate('CombinedCNECMU')}>
         <Image source={require('../assets/bigbeans.png')} style={styles.logo} />
-      </View>
-      <View style={styles.optionsContainer}>
+      </TouchableOpacity>
+      {/* <View style={styles.optionsContainer}>
         <TouchableOpacity
           style={styles.option}
           onPress={() => navigation.navigate('CNE')}>
-          {/* <Icon name="book-outline" size={40} color="#FFD700" /> */}
           <Text style={styles.optionText}>
             청라<Text style={styles.ne}>NE</Text>
           </Text>
@@ -34,12 +35,11 @@ const HomeScreen = () => {
         <TouchableOpacity
           style={styles.option}
           onPress={() => navigation.navigate('CMU')}>
-          {/* <Icon name="musical-notes-outline" size={40} color="#FFD700" /> */}
           <Text style={styles.optionText}>
             청라<Text style={styles.ne}>뮤</Text>
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#04ca5b',
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -63,21 +63,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
   },
-  menuIcon: {
-    marginTop: 10,
-  },
   titleContainer: {
     alignItems: 'flex-start',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: '#f9ef80',
   },
   subtitle: {
     fontSize: 16,
     color: '#FFF',
     marginTop: 5,
+  },
+  authButton: {
+    backgroundColor: '#FFD700',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 20,
+  },
+  authButtonText: {
+    color: '#363636',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   logoContainer: {
     justifyContent: 'center',
