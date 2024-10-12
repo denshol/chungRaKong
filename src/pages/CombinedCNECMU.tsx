@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import {
   View,
   FlatList,
@@ -10,11 +10,12 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons'; // 아이콘을 위해 추가
 
 const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
-// Combine the data from both components
-const combinedData = [
+// 1호점 데이터 (기존 데이터)
+const branch1Data = [
   {
     id: 'cmu1',
     title: '통기타',
@@ -64,8 +65,6 @@ const combinedData = [
     image: require('../assets/violin.png'),
     poster: require('../assets/poster/violin_lesson.png'),
     timetable: '토요일: 12:30 AM - 01:30 PM',
-    // curriculum:
-    //   '1개월차 : 발성 연습\n2개월차: 맞춤곡으로 실습\n3개월차 : 버스킹',
     instructors: [
       {
         name: '이루리',
@@ -93,7 +92,6 @@ const combinedData = [
 Ur 오케스트라 지도강사
 FOG연주단 세컨 악장
 강서필 오케스트라 세컨악장`,
-        // profileImage: require('../assets/profiles/splsh.png'),
       },
     ],
     type: '청라뮤',
@@ -105,8 +103,6 @@ FOG연주단 세컨 악장
     image: require('../assets/chelo.png'),
     poster: require('../assets/poster/chelo_teacher.jpg'),
     timetable: '토요일: 11:00 AM - 12:00 AM',
-    // curriculum:
-    //   '1개월차 : 발성 연습\n2개월차: 맞춤곡으로 실습\n3개월차 : 버스킹',
     instructors: [
       {
         name: '고희민',
@@ -117,7 +113,6 @@ FOG연주단 세컨 악장
 인천 센트럴심포니 오케스트라 수석단원
 Pla-in Ensemble, ForVc Ensemble,
 Bom Trio 첼리스트`,
-        // profileImage: require('../assets/profiles/splsh.png'),
       },
     ],
     type: '청라뮤',
@@ -171,70 +166,167 @@ Bom Trio 첼리스트`,
         name: 'Jay Kang',
         introduction: {
           image: require('../assets/profiles/jayKangTeacher.png.jpg'),
-        }, // 소개용 이미지,
-        // profileImage: require('../assets/profiles/jayKangTeacher.png'),
+        },
       },
       {
         name: 'Alice Johnson',
         introduction: {
           image: require('../assets/profiles/hoonKangTeacher.png.jpg'),
-        }, // 소개용 이미지,
-        // profileImage: require('../assets/profiles/splsh.png'),
+        },
       },
     ],
     type: '청라NE',
   },
 ];
 
-const Item = ({title, description, image, onPress, type}) => (
-  <View style={styles.item}>
-    <Image source={image} style={styles.image} />
-    <View style={styles.textContainer}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description} numberOfLines={2} ellipsizeMode="tail">
-        {description}
-      </Text>
-      <View style={styles.bottomRow}>
-        <TouchableOpacity style={styles.button} onPress={onPress}>
-          <Text style={styles.buttonText}>수업 자세히 알아보기</Text>
-        </TouchableOpacity>
-        <View
-          style={[
-            styles.badge,
-            {backgroundColor: type === '청라뮤' ? '#007AFF' : '#FF9500'},
-          ]}>
-          <Text style={styles.badgeText}>{type}</Text>
+// 2호점 데이터 (새로 추가)
+const branch2Data = [
+  {
+    id: '2_cmu1',
+    title: '피아노',
+    description: '클래식부터 재즈까지 다양한 장르의 피아노를 배워보세요!',
+    image: require('../assets/lordslove.png'),
+    poster: require('../assets/poster/cne.speech.jpg'),
+    timetable: '월, 수, 금: 3:00 PM - 5:00 PM',
+    curriculum:
+      '1개월: 기초 이론 및 연습\n2개월: 클래식 곡 연습\n3개월: 재즈 및 즉흥 연주',
+    instructors: [
+      {
+        name: '김피아노',
+        introduction: '줄리아드 음대 졸업, 10년 경력의 피아노 교육 전문가',
+      },
+    ],
+    type: '청라뮤',
+  },
+  {
+    id: '2_cne1',
+    title: '로봇 공학',
+    description: '미래 기술의 핵심, 로봇 공학을 배워보세요!',
+    image: require('../assets/bigbeans.png'),
+    poster: require('../assets/poster/cne_coding.jpg'),
+    timetable: '화, 목: 4:00 PM - 6:00 PM',
+    curriculum:
+      '1개월: 기초 로봇 이론\n2개월: 간단한 로봇 제작\n3개월: 프로그래밍 및 고급 로봇 제작',
+    instructors: [
+      {
+        name: '박로봇',
+        introduction: 'MIT 로봇공학과 박사, 로봇 올림피아드 수상 경력',
+      },
+    ],
+    type: '청라NE',
+  },
+];
+
+const Item = React.memo(
+  ({title, description, image, onPress, type, branch}) => (
+    <View
+      style={[
+        styles.item,
+        {borderColor: branch === 1 ? '#007AFF' : '#4CD964'},
+      ]}>
+      <Image source={image} style={styles.image} />
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description} numberOfLines={2} ellipsizeMode="tail">
+          {description}
+        </Text>
+        <View style={styles.bottomRow}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              {backgroundColor: branch === 1 ? '#007AFF' : '#4CD964'},
+            ]}
+            onPress={onPress}>
+            <Text style={styles.buttonText}>수업 자세히 알아보기</Text>
+          </TouchableOpacity>
+          <View style={[styles.badge, {backgroundColor: getBadgeColor(type)}]}>
+            <Text style={styles.badgeText}>{type}</Text>
+          </View>
         </View>
       </View>
+      <Icon
+        name={branch === 1 ? 'home-outline' : 'business-outline'}
+        size={24}
+        color={branch === 1 ? '#007AFF' : '#4CD964'}
+        style={styles.branchIcon}
+      />
     </View>
-  </View>
+  ),
 );
+
+const getBadgeColor = type => {
+  switch (type) {
+    case '청라뮤':
+      return '#FF9500';
+    case '청라NE':
+      return '#5856D6';
+    default:
+      return '#8E8E93';
+  }
+};
 
 const CombinedCNECMU = () => {
   const navigation = useNavigation();
+  const [selectedBranch, setSelectedBranch] = useState(1);
+
+  const data = useMemo(
+    () => (selectedBranch === 1 ? branch1Data : branch2Data),
+    [selectedBranch],
+  );
+
+  const renderItem = useCallback(
+    ({item}) => (
+      <Item
+        title={item.title}
+        description={item.description}
+        image={item.image}
+        type={item.type}
+        branch={selectedBranch}
+        onPress={() => navigation.navigate('Detail', {...item})}
+      />
+    ),
+    [navigation, selectedBranch],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={combinedData}
-        renderItem={({item}) => (
-          <Item
-            title={item.title}
-            description={item.description}
-            image={item.image}
-            type={item.type}
-            onPress={() =>
-              navigation.navigate('Detail', {
-                title: item.title,
-                description: item.description,
-                poster: item.poster,
-                timetable: item.timetable,
-                curriculum: item.curriculum,
-                instructors: item.instructors,
-              })
-            }
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[styles.tab, selectedBranch === 1 && styles.selectedTab1]}
+          onPress={() => setSelectedBranch(1)}>
+          <Icon
+            name="home-outline"
+            size={24}
+            color={selectedBranch === 1 ? 'white' : '#007AFF'}
           />
-        )}
+          <Text
+            style={[
+              styles.tabText,
+              selectedBranch === 1 && styles.selectedTabText,
+            ]}>
+            1호점
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, selectedBranch === 2 && styles.selectedTab2]}
+          onPress={() => setSelectedBranch(2)}>
+          <Icon
+            name="business-outline"
+            size={24}
+            color={selectedBranch === 2 ? 'white' : '#4CD964'}
+          />
+          <Text
+            style={[
+              styles.tabText,
+              selectedBranch === 2 && styles.selectedTabText,
+            ]}>
+            2호점
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
       />
@@ -247,6 +339,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f8f8',
   },
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    backgroundColor: '#e0e0e0',
+  },
+  selectedTab1: {
+    backgroundColor: '#007AFF',
+  },
+  selectedTab2: {
+    backgroundColor: '#4CD964',
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 5,
+    color: '#333',
+  },
+  selectedTabText: {
+    color: 'white',
+  },
   listContainer: {
     paddingHorizontal: 16,
     paddingVertical: 20,
@@ -257,11 +380,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: 'white',
     borderRadius: 12,
+    borderWidth: 2,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
@@ -293,7 +414,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#007AFF',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -312,6 +432,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: '600',
+  },
+  branchIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 

@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  Linking,
 } from 'react-native';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
@@ -23,46 +24,59 @@ const Detail = ({route}) => {
     setModalVisible(true);
   };
 
+  const handleContact = () => {
+    Linking.openURL(`tel:01080061715`);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => openModal(poster)}>
-        <Image source={poster} style={styles.poster} />
-      </TouchableOpacity>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.sectionTitle}>강사 소개</Text>
-      {instructors.map((instructor, index) => (
-        <View key={index} style={styles.instructorContainer}>
-          <Image source={instructor.profileImage} style={styles.profileImage} />
-          <View style={styles.instructorTextContainer}>
-            <Text style={styles.instructorName}>{instructor.name}</Text>
-            {typeof instructor.introduction === 'string' ? (
-              <Text style={styles.instructorIntroduction}>
-                {instructor.introduction}
-              </Text>
-            ) : (
-              <View>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <TouchableOpacity onPress={() => openModal(poster)}>
+          <Image source={poster} style={styles.poster} />
+        </TouchableOpacity>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.sectionTitle}>강사 소개</Text>
+        {instructors.map((instructor, index) => (
+          <View key={index} style={styles.instructorContainer}>
+            <Image
+              source={instructor.profileImage}
+              style={styles.profileImage}
+            />
+            <View style={styles.instructorTextContainer}>
+              <Text style={styles.instructorName}>{instructor.name}</Text>
+              {typeof instructor.introduction === 'string' ? (
                 <Text style={styles.instructorIntroduction}>
-                  {instructor.introduction.text}
+                  {instructor.introduction}
                 </Text>
-                {instructor.introduction.image && (
-                  <TouchableOpacity
-                    onPress={() => openModal(instructor.introduction.image)}>
-                    <Image
-                      source={instructor.introduction.image}
-                      style={styles.introductionImage}
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
-            )}
+              ) : (
+                <View>
+                  <Text style={styles.instructorIntroduction}>
+                    {instructor.introduction.text}
+                  </Text>
+                  {instructor.introduction.image && (
+                    <TouchableOpacity
+                      onPress={() => openModal(instructor.introduction.image)}>
+                      <Image
+                        source={instructor.introduction.image}
+                        style={styles.introductionImage}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      ))}
-      <Text style={styles.sectionTitle}>시간표</Text>
-      <Text style={styles.content}>{timetable}</Text>
-      <Text style={styles.sectionTitle}>커리큘럼</Text>
-      <Text style={styles.content}>{curriculum}</Text>
+        ))}
+        <Text style={styles.sectionTitle}>시간표</Text>
+        <Text style={styles.content}>{timetable}</Text>
+        <Text style={styles.sectionTitle}>커리큘럼</Text>
+        <Text style={styles.content}>{curriculum}</Text>
+      </ScrollView>
+
+      <TouchableOpacity style={styles.contactButton} onPress={handleContact}>
+        <Text style={styles.contactButtonText}>문의하기</Text>
+      </TouchableOpacity>
 
       <Modal
         animationType="fade"
@@ -81,7 +95,7 @@ const Detail = ({route}) => {
           </TouchableOpacity>
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -89,6 +103,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f8f8',
+  },
+  scrollView: {
+    flex: 1,
   },
   poster: {
     width: '100%',
@@ -168,6 +185,17 @@ const styles = StyleSheet.create({
   fullScreenImage: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
+  },
+  contactButton: {
+    backgroundColor: '#03c75b',
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contactButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
