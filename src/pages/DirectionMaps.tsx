@@ -32,7 +32,7 @@ const DirectionsMap = () => {
             });
 
             var infowindow = new google.maps.InfoWindow({
-              content: '<div style="font-size: 20px; font-weight: bold; padding: 0px;">인천광역시 서구 청라동 167-10</div>'
+              content: '<div style="font-size: 20px; font-weight: bold; padding: 0px;">인천광역시 서구 청라동 167-10 / 미라클프라자 6층</div>'
             });
 
             // 인포윈도우를 항상 열어두기

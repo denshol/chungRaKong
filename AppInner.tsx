@@ -1,3 +1,4 @@
+// AppInner.js
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -22,6 +23,8 @@ import HomeScreen from './src/pages/HomeScreen';
 import CombinedCNECMU from './src/pages/CombinedCNECMU';
 import CNE from './src/pages/CNE';
 import CMU from './src/pages/CMU';
+import VideoBoard from './src/pages/VideoBoard';
+import VideoDetail from './src/pages/VideoDetail';
 import Notifications from './src/pages/Notifications';
 import Settings from './src/pages/Settings';
 import Detail from './src/pages/Detail';
@@ -29,6 +32,8 @@ import SplashScreen from 'react-native-splash-screen';
 import KeyboardAvoidingComponent from './src/components/KeyboardAvoidingComponent';
 import DirectionsMap from './src/pages/DirectionMaps';
 import ProgramSchedule from './src/pages/ProgramSchedules';
+import PhotoGallery from './src/pages/PhotoGallery';
+import ClassGallery from './src/pages/ClassGallery';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -167,6 +172,34 @@ const MainStack = () => (
       })}
     />
     <Stack.Screen
+      name="VideoBoard"
+      component={VideoBoard}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/video.png')}
+            title="강의 영상"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
+    <Stack.Screen
+      name="VideoDetail"
+      component={VideoDetail}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/video.png')}
+            title="강의 영상"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
+    <Stack.Screen
       name="Notifications"
       component={Notifications}
       options={{title: '알림'}}
@@ -180,6 +213,34 @@ const MainStack = () => (
       name="Detail"
       component={Detail}
       options={{title: '상세 정보'}}
+    />
+    <Stack.Screen
+      name="PhotoGallery"
+      component={PhotoGallery}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/camera.png')}
+            title="갤러리"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
+    <Stack.Screen
+      name="ClassGallery"
+      component={ClassGallery}
+      options={({navigation}) => ({
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/camera.png')}
+            title="수업 사진"
+          />
+        ),
+        headerTitle: '',
+      })}
     />
   </Stack.Navigator>
 );
@@ -206,6 +267,8 @@ const LoggedInTabs = () => {
             else if (route.name === 'Notice') iconName = 'megaphone-outline';
             else if (route.name === 'ProgramSchedule')
               iconName = 'calendar-outline';
+            else if (route.name === 'PhotoGallery')
+              iconName = 'images-outline'; // 추가
             else if (route.name === 'YouTube')
               return (
                 <FontAwesome name="youtube-play" color={color} size={size} />
@@ -239,6 +302,12 @@ const LoggedInTabs = () => {
           name="ProgramSchedule"
           component={ProgramSchedule}
           options={{title: '프로그램'}}
+        />
+        {/* 여기에 갤러리 탭 추가 */}
+        <Tab.Screen
+          name="PhotoGallery"
+          component={PhotoGallery}
+          options={{title: '갤러리'}}
         />
         <Tab.Screen
           name="YouTube"

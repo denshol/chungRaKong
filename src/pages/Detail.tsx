@@ -1,201 +1,161 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  Image,
   StyleSheet,
+  Image,
   ScrollView,
-  Dimensions,
   TouchableOpacity,
-  Modal,
-  Linking,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
+const Detail = ({route, navigation}) => {
+  const {
+    title,
+    description,
+    poster,
+    curriculum,
+    instructors,
+    type,
+    hasGallery,
+  } = route.params;
 
-const Detail = ({route}) => {
-  const {title, description, poster, timetable, curriculum, instructors} =
-    route.params;
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentImage, setCurrentImage] = useState(null);
-
-  const openModal = image => {
-    setCurrentImage(image);
-    setModalVisible(true);
-  };
-
-  const handleContact = () => {
-    Linking.openURL(`tel:01080061715`);
-  };
+  console.log('Detail Screen - route.params:', route.params);
+  console.log('Detail Screen - title:', title);
+  console.log('Detail Screen - hasGallery:', hasGallery);
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <TouchableOpacity onPress={() => openModal(poster)}>
-          <Image source={poster} style={styles.poster} />
-        </TouchableOpacity>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
-        <Text style={styles.sectionTitle}>강사 소개</Text>
-        {instructors.map((instructor, index) => (
-          <View key={index} style={styles.instructorContainer}>
-            <Image
-              source={instructor.profileImage}
-              style={styles.profileImage}
-            />
-            <View style={styles.instructorTextContainer}>
-              <Text style={styles.instructorName}>{instructor.name}</Text>
-              {typeof instructor.introduction === 'string' ? (
-                <Text style={styles.instructorIntroduction}>
-                  {instructor.introduction}
-                </Text>
-              ) : (
-                <View>
-                  <Text style={styles.instructorIntroduction}>
-                    {instructor.introduction.text}
-                  </Text>
-                  {instructor.introduction.image && (
-                    <TouchableOpacity
-                      onPress={() => openModal(instructor.introduction.image)}>
-                      <Image
-                        source={instructor.introduction.image}
-                        style={styles.introductionImage}
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              )}
-            </View>
-          </View>
-        ))}
-        <Text style={styles.sectionTitle}>시간표</Text>
-        <Text style={styles.content}>{timetable}</Text>
-        <Text style={styles.sectionTitle}>커리큘럼</Text>
-        <Text style={styles.content}>{curriculum}</Text>
-      </ScrollView>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        {/* 디버그용 텍스트 추가 */}
+        <Text style={{color: 'red', fontSize: 16}}>수업명: {title}</Text>
+        <Text style={{color: 'red', fontSize: 16}}>
+          갤러리 버튼 표시 여부: {hasGallery ? '예' : '아니오'}
+        </Text>
 
-      <TouchableOpacity style={styles.contactButton} onPress={handleContact}>
-        <Text style={styles.contactButtonText}>문의하기</Text>
-      </TouchableOpacity>
+        <Image source={poster} style={styles.poster} />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.description}>{description}</Text>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.centeredView}>
+          {/* 갤러리 버튼 - 조건 변경해서 테스트 */}
           <TouchableOpacity
-            style={styles.modalBackground}
-            onPress={() => setModalVisible(false)}>
-            <Image
-              source={currentImage}
-              style={styles.fullScreenImage}
-              resizeMode="contain"
-            />
+            style={styles.galleryButton}
+            onPress={() => navigation.navigate('ClassGallery')}>
+            <Icon name="images-outline" size={20} color="#fff" />
+            <Text style={styles.galleryButtonText}>수업 사진 보기</Text>
           </TouchableOpacity>
+
+          {curriculum && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>커리큘럼</Text>
+              <Text style={styles.curriculum}>{curriculum}</Text>
+            </View>
+          )}
+
+          {instructors && instructors.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>강사 소개</Text>
+              {instructors.map((instructor, index) => (
+                <View key={index} style={styles.instructorContainer}>
+                  <Text style={styles.instructorName}>{instructor.name}</Text>
+                  <Text style={styles.instructorIntro}>
+                    {instructor.introduction}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
-      </Modal>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#fff',
   },
-  scrollView: {
-    flex: 1,
+  content: {
+    padding: 16,
   },
   poster: {
     width: '100%',
     height: 300,
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     borderRadius: 12,
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    padding: 16,
+    marginBottom: 8,
     color: '#333',
   },
   description: {
     fontSize: 16,
-    padding: 16,
-    paddingTop: 0,
     color: '#666',
+    marginBottom: 16,
+    lineHeight: 24,
+  },
+  // Detail.js의 styles에서
+  galleryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF9500',
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 20,
+    justifyContent: 'center',
+    // 버튼을 더 눈에 띄게 만듦
+    borderWidth: 2,
+    borderColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  galleryButtonText: {
+    color: '#fff',
+    fontSize: 20, // 글자 크기 증가
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  section: {
+    marginTop: 24,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 16,
-    paddingBottom: 8,
-    color: '#333',
-  },
-  content: {
-    fontSize: 16,
-    padding: 16,
-    paddingTop: 0,
-    color: '#666',
-  },
-  instructorContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    alignItems: 'flex-start',
-  },
-  profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginRight: 16,
-  },
-  instructorTextContainer: {
-    flex: 1,
-  },
-  instructorName: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+  },
+  curriculum: {
+    fontSize: 15,
+    color: '#666',
+    lineHeight: 24,
+  },
+  instructorContainer: {
+    marginBottom: 16,
+  },
+  instructorName: {
+    fontSize: 16,
+    fontWeight: '600',
     marginBottom: 8,
     color: '#333',
   },
-  instructorIntroduction: {
-    fontSize: 14,
+  instructorIntro: {
+    fontSize: 15,
     color: '#666',
-  },
-  introductionImage: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-    marginTop: 10,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
-  fullScreenImage: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-  },
-  contactButton: {
-    backgroundColor: '#03c75b',
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contactButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    lineHeight: 24,
   },
 });
 

@@ -3189,11 +3189,6 @@ escape-string-regexp@^2.0.0:
 escape-string-regexp@^4.0.0:
   version "4.0.0"
 
-escape-string-regexp@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
-  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
-
 eslint-config-prettier@^8.5.0:
   version "8.10.0"
 
@@ -3346,6 +3341,11 @@ etag@~1.8.1:
 
 event-target-shim@^5.0.0, event-target-shim@^5.0.1:
   version "5.0.1"
+
+events@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/events/-/events-3.3.0.tgz"
+  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 execa@^5.0.0, execa@^5.1.1:
   version "5.1.1"
@@ -5349,28 +5349,35 @@ react-native-uuid@^2.0.2:
   resolved "https://registry.npmjs.org/react-native-uuid/-/react-native-uuid-2.0.2.tgz"
   integrity sha512-5ypj/hV58P+6VREdjkW0EudSibsH3WdqDERoHKnD9syFWjF+NfRWWrJb2sa3LIwI5zpzMvUiabs+DX40WHpEMw==
 
-react-native-vector-icons@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-10.1.0.tgz"
-  integrity sha512-fdQjCHIdoXmRoTZ5gvN1FmT4sGLQ2wmQiNZHKJQUYnE2tkIwjGnxNch+6Nd4lHAACvMWO7LOzBNot2u/zlOmkw==
+react-native-vector-icons@^10.2.0:
+  version "10.2.0"
+  resolved "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-10.2.0.tgz"
+  integrity sha512-n5HGcxUuVaTf9QJPs/W22xQpC2Z9u0nb0KgLPnVltP8vdUvOp6+R26gF55kilP/fV4eL4vsAHUqUjewppJMBOQ==
   dependencies:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-video@^6.5.0:
-  version "6.5.0"
-  resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-6.5.0.tgz"
-  integrity sha512-P3FmyQgKigS4BmFG+6heRHzSp591U/Z+Iw08wWmiNsNiyLRa6x8B0ob4wqWTW4QfzsBf80udg1/T2W49KxxzYw==
+react-native-video@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-6.8.0.tgz"
+  integrity sha512-4Q4ccIXcPWG4Xm239DyLfTOTP01DYzrlXV4dBkuygINsrGTqua5E4jedkDRjj/KOOjIqDjO1elstZq2sfS2lOg==
 
-react-native-webview@^13.10.5:
-  version "13.10.5"
-  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.10.5.tgz"
-  integrity sha512-ZfQJHyifuZop8cQB8HYpL9dxss9Cw9sOlMU+/yarfG/ugoL0rky/0tq9QmEydFMXjDSplSUb22OrRdFlqfXe0g==
+react-native-webview@^13.12.4, react-native-webview@>=7.0.0:
+  version "13.12.4"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.12.4.tgz"
+  integrity sha512-8lWeYPVWeOj0ya9ZpDesOQPRgczuN3ogQHlhS21sNXndd4kvfPG+WjlRdrvxYgj//udpwmzcWzagwLnEp60Aqg==
   dependencies:
-    escape-string-regexp "2.0.0"
+    escape-string-regexp "^4.0.0"
     invariant "2.2.4"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.25.1, react-native@>=0.57.0, react-native@>=0.63.0, react-native@>=0.65.0, react-native@>0.62.0, react-native@0.74.4:
+react-native-youtube-iframe@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/react-native-youtube-iframe/-/react-native-youtube-iframe-2.3.0.tgz"
+  integrity sha512-M+z63xwXVtS4dX3k8PbtHUUcWN+gRZt6J1EtPE7Y60BMOB979KjpkdrHqeR96or9pNR2W8K5tQhIkMXW2jwo7Q==
+  dependencies:
+    events "^3.2.0"
+
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.25.1, react-native@>=0.57.0, react-native@>=0.60, react-native@>=0.63.0, react-native@>=0.65.0, react-native@>0.62.0, react-native@0.74.4:
   version "0.74.4"
   dependencies:
     "@jest/create-cache-key-function" "^29.6.3"
@@ -5440,7 +5447,7 @@ react-test-renderer@18.2.0:
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.0"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", react@^18.0, react@^18.2.0, "react@>= 17.0.1", react@>=0.14.5, react@>=16.8, react@>=17.0.0, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17.0.0 || ^18", react@^18.0, react@^18.2.0, "react@>= 17.0.1", react@>=0.14.5, react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@18.2.0:
   version "18.2.0"
   dependencies:
     loose-envify "^1.1.0"
