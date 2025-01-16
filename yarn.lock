@@ -5255,15 +5255,14 @@ react-native-flipper@>=0.100.0:
   resolved "https://registry.npmjs.org/react-native-flipper/-/react-native-flipper-0.261.0.tgz"
   integrity sha512-CxVH0YfgfSv5kJ4r233PdB93JJhaU8zSesNmGTOPq0d+E//7LQ/sio70EHoysrQ+EtB+R1z/pKWn4587wgD2yw==
 
-react-native-gesture-handler@^2.18.1, "react-native-gesture-handler@>= 1.0.0":
-  version "2.18.1"
-  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.18.1.tgz"
-  integrity sha512-WF2fxQ5kTaxHghlkBM4YxO86SyGWVwrSNgJ1E8z/ZtL2xD5B3bg5agvuVFfOzvceC114yq71s6E9vKPz94ZxRw==
+react-native-gesture-handler@^2.22.0, "react-native-gesture-handler@>= 1.0.0":
+  version "2.22.0"
+  resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.22.0.tgz"
+  integrity sha512-m5Ps1cOSxSiMP4re+XsbeWcC9DNJuIEjMSmtUxBdyfYEJtdu5iAAiX7KlHHrf2mnK4I/56Ncy4PvPKWBwSpWpQ==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
-    prop-types "^15.7.2"
 
 react-native-image-pan-zoom@^2.1.12:
   version "2.1.12"

@@ -89,6 +89,13 @@ const PhotoGallery = () => {
         '청라콩 공연에서 마스코트 같은 역할을 해준 고마운 가을하늘이. 너무 귀여웠어. 수고했어 고마워 :D ',
       date: '2024.12.27',
     },
+    {
+      id: '11',
+      image: require('../assets/poster/chungRaFestival.jpg'),
+      description:
+        '청라콩 제2회 정기공연이 예정되어있습니다. 많은 관심 부탁드립니다. 기대해주세요.',
+      date: '2025.04',
+    },
   ];
 
   const totalPages = Math.ceil(photos.length / photosPerPage);

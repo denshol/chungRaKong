@@ -15,15 +15,30 @@ import {
   Dimensions,
   Platform,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Swiper from 'react-native-swiper';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN_HEIGHT / SCREEN_WIDTH;
 
 const VideoModal = ({visible, onClose, onSkip}) => {
   const [volume, setVolume] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const contents = [
+    {
+      type: 'video',
+      source: require('./src/assets/video/chungRaFestival.mp4'),
+    },
+    {
+      type: 'poster',
+      image: require('./src/assets/poster/chungRaFestival.jpg'),
+      text: '청라콩문화센터에 오신 것을 환영합니다!\n\n청라콩 제2회 정기공연\n2024년 4월',
+    },
+  ];
 
   return (
     <Modal
@@ -33,21 +48,69 @@ const VideoModal = ({visible, onClose, onSkip}) => {
       onRequestClose={onClose}>
       <SafeAreaView style={styles.centeredView}>
         <View style={styles.modalView}>
-          <View style={styles.videoContainer}>
-            <Video
-              source={require('./src/assets/video/chungrakong.mp4')}
-              style={styles.video}
-              controls={true}
-              resizeMode="contain"
-              onEnd={onClose}
-              repeat={false}
-              volume={volume}
-              muted={false}
-              ignoreSilentSwitch={'ignore'}
-              playInBackground={false}
-              playWhenInactive={false}
-            />
+          <View style={styles.headerContainer}>
+            <Text style={styles.pageIndicator}>
+              {currentPage + 1} / {contents.length}
+            </Text>
+            <View style={styles.dotsContainer}>
+              {contents.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    index === currentPage && styles.activeDot,
+                  ]}
+                />
+              ))}
+            </View>
+            <Text style={styles.swipeGuide}>
+              {currentPage === 0 ? '← 옆으로 스와이프하여 더보기' : ''}
+            </Text>
           </View>
+
+          <Swiper
+            style={styles.wrapper}
+            showsButtons={true}
+            loop={false}
+            dot={<View style={styles.transparentDot} />}
+            activeDot={<View style={styles.transparentDot} />}
+            onIndexChanged={index => setCurrentPage(index)}
+            nextButton={
+              <View style={styles.swiperButton}>
+                <Icon name="chevron-forward" size={24} color="#FFF" />
+              </View>
+            }
+            prevButton={
+              <View style={styles.swiperButton}>
+                <Icon name="chevron-back" size={24} color="#FFF" />
+              </View>
+            }>
+            {contents.map((content, index) => (
+              <View key={index} style={styles.slideContainer}>
+                {content.type === 'video' ? (
+                  <View style={styles.videoContainer}>
+                    <Video
+                      source={content.source}
+                      style={styles.video}
+                      controls={true}
+                      resizeMode="contain"
+                      volume={volume}
+                      muted={false}
+                      ignoreSilentSwitch={'ignore'}
+                      playInBackground={false}
+                      playWhenInactive={false}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.posterContainer}>
+                    <Image source={content.image} style={styles.posterImage} />
+                    <Text style={styles.posterText}>{content.text}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </Swiper>
+
           <View style={styles.controlsContainer}>
             <TouchableOpacity
               style={styles.iconButton}
@@ -98,7 +161,7 @@ function App() {
       }
     };
 
-    const timer = setTimeout(checkLastViewedTime, 500); // 스플래시 활성화 시간
+    const timer = setTimeout(checkLastViewedTime, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -152,6 +215,50 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  headerContainer: {
+    width: '100%',
+    paddingVertical: 10,
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  pageIndicator: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ccc',
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: '#04ca5b',
+    width: 10,
+    height: 10,
+  },
+  swipeGuide: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  transparentDot: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+  },
+  swiperButton: {
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   videoContainer: {
     width: '100%',
@@ -210,6 +317,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
+  slideContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  posterContainer: {
+    width: '100%',
+    height: '90%',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  posterImage: {
+    width: '100%',
+    height: '70%',
+    resizeMode: 'contain',
+  },
+  posterText: {
+    marginTop: 20,
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 24,
+    color: '#333',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 15,
+    borderRadius: 10,
+  },
+  wrapper: {},
 });
 
 export default App;

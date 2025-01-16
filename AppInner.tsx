@@ -74,11 +74,14 @@ const AnimatedHeaderText = () => {
 
 const NewsModal = ({visible, onClose}) => {
   const images = [
-    require('./src/assets/modal1.jpg'),
-    require('./src/assets/modal2.jpg'),
-    require('./src/assets/modal3.jpg'),
-    require('./src/assets/modal4.jpg'),
-    require('./src/assets/modal5.jpg'),
+    require('./src/assets/news/modal1.jpg'),
+    require('./src/assets/news/modal2.jpg'),
+    require('./src/assets/news/modal3.jpg'),
+    require('./src/assets/news/modal4.jpg'),
+    require('./src/assets/news/modal5.jpg'),
+    require('./src/assets/news/modal6.jpg'),
+    require('./src/assets/news/modal7.jpg'),
+    require('./src/assets/news/modal8.jpg'),
   ];
 
   return (
@@ -256,6 +259,20 @@ const TabBarCustomButton = ({children, onPress}) => (
 
 const LoggedInTabs = () => {
   const [newsModalVisible, setNewsModalVisible] = useState(false);
+  const [showBadges, setShowBadges] = useState({
+    program: true,
+    gallery: true,
+    youtube: true,
+  });
+
+  const hideBadge = tabName => {
+    setShowBadges(prev => ({
+      ...prev,
+      [tabName]: false,
+    }));
+  };
+
+  // LoggedInTabs 컴포넌트 내부의 Tab.Navigator 부분을 수정
 
   return (
     <>
@@ -263,17 +280,49 @@ const LoggedInTabs = () => {
         screenOptions={({route}) => ({
           tabBarIcon: ({color, size}) => {
             let iconName;
-            if (route.name === 'MainHome') iconName = 'home-outline';
-            else if (route.name === 'Notice') iconName = 'megaphone-outline';
-            else if (route.name === 'ProgramSchedule')
-              iconName = 'calendar-outline';
-            else if (route.name === 'PhotoGallery')
-              iconName = 'images-outline'; // 추가
-            else if (route.name === 'YouTube')
+            if (route.name === 'MainHome') {
+              iconName = 'home-outline';
+              return <Icon name={iconName} color={color} size={size} />;
+            } else if (route.name === 'Notice') {
+              iconName = 'megaphone-outline';
+              return <Icon name={iconName} color={color} size={size} />;
+            } else if (route.name === 'ProgramSchedule') {
               return (
-                <FontAwesome name="youtube-play" color={color} size={size} />
+                <View>
+                  <Icon name="calendar-outline" color={color} size={size} />
+                  {showBadges.program && (
+                    <View style={styles.badgeContainer}>
+                      <Text style={styles.badgeText}>N</Text>
+                    </View>
+                  )}
+                </View>
               );
-            else if (route.name === 'Directions') iconName = 'map-outline';
+            } else if (route.name === 'PhotoGallery') {
+              return (
+                <View>
+                  <Icon name="images-outline" color={color} size={size} />
+                  {showBadges.gallery && (
+                    <View style={styles.badgeContainer}>
+                      <Text style={styles.badgeText}>N</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            } else if (route.name === 'YouTube') {
+              return (
+                <View>
+                  <FontAwesome name="youtube-play" color={color} size={size} />
+                  {showBadges.youtube && (
+                    <View style={styles.badgeContainer}>
+                      <Text style={styles.badgeText}>N</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            } else if (route.name === 'Directions') {
+              iconName = 'map-outline';
+              return <Icon name={iconName} color={color} size={size} />;
+            }
             return <Icon name={iconName} color={color} size={size} />;
           },
           tabBarActiveTintColor: '#04ca5b',
@@ -286,28 +335,20 @@ const LoggedInTabs = () => {
           options={{headerShown: false, title: '홈'}}
         />
         <Tab.Screen
-          name="Notice"
-          component={() => null}
-          options={{
-            title: '콩뉴스',
-            tabBarButton: props => (
-              <TabBarCustomButton
-                {...props}
-                onPress={() => setNewsModalVisible(true)}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
           name="ProgramSchedule"
           component={ProgramSchedule}
           options={{title: '프로그램'}}
+          listeners={{
+            tabPress: () => hideBadge('program'),
+          }}
         />
-        {/* 여기에 갤러리 탭 추가 */}
         <Tab.Screen
           name="PhotoGallery"
           component={PhotoGallery}
           options={{title: '갤러리'}}
+          listeners={{
+            tabPress: () => hideBadge('gallery'),
+          }}
         />
         <Tab.Screen
           name="YouTube"
@@ -317,11 +358,12 @@ const LoggedInTabs = () => {
             tabBarButton: props => (
               <TabBarCustomButton
                 {...props}
-                onPress={() =>
+                onPress={() => {
+                  hideBadge('youtube');
                   Linking.openURL(
                     'https://www.youtube.com/@%EC%B2%AD%EB%9D%BC%EC%BD%A9',
-                  )
-                }
+                  );
+                }}
               />
             ),
           }}
@@ -428,6 +470,52 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+  },
+  posterContainer: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'white',
+  },
+  posterImage: {
+    width: '100%',
+    height: '70%',
+    resizeMode: 'contain',
+  },
+  posterText: {
+    marginTop: 20,
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 24,
+    color: '#333',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 15,
+    borderRadius: 10,
+  },
+  badgeContainer: {
+    position: 'absolute',
+    right: -6,
+    top: -3,
+    backgroundColor: '#FF3B30',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#fff',
+    zIndex: 1,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    paddingHorizontal: 3,
   },
 });
 

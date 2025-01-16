@@ -19,7 +19,7 @@ const ProgramSchedule = () => {
     <View style={styles.container}>
       <ScrollView>
         <Image
-          source={require('../assets/programSchedule3.jpg')}
+          source={require('../assets/poster/program.jpg')}
           style={styles.image}
           resizeMode="contain"
         />
