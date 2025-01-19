@@ -293,7 +293,7 @@ const branch1Data = [
     type: '청라NE',
   },
   {
-    id: '3',
+    id: 'cne3',
     title: 'ENGLISH SPEECH',
     description: '실력이 출중한 강사님들과 회화능력을 키워보세요!',
     image: require('../assets/poster/chungRaEng.jpg'),

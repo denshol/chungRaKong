@@ -47,9 +47,9 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: Dimensions.get('window').width,
-    height: 300, // 헤더 이미지의 높이를 고정 값으로 설정
-    marginBottom: -150,
-    marginTop: -7,
+    height: 130, // 헤더 이미지의 높이를 고정 값으로 설정
+    marginBottom: -50,
+    marginTop: 50,
   },
   contentImage: {
     width: Dimensions.get('window').width,

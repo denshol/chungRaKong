@@ -30,6 +30,9 @@ import DirectionsMap from './src/pages/DirectionMaps';
 import ProgramSchedule from './src/pages/ProgramSchedules';
 import PhotoGallery from './src/pages/PhotoGallery';
 import ClassGallery from './src/pages/ClassGallery';
+import BoardScreen from './src/pages/board/BoardScreen';
+import PostDetail from './src/pages/board/PostDetail';
+import WritePost from './src/pages/board/WritePost';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -212,6 +215,51 @@ const MainStack = () => (
         headerTitle: '',
       })}
     />
+    <Stack.Screen
+      name="Board"
+      component={BoardScreen}
+      options={({navigation}) => ({
+        title: '게시판',
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/board.png')}
+            title="게시판"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
+    <Stack.Screen
+      name="PostDetail"
+      component={PostDetail}
+      options={({navigation}) => ({
+        title: '게시글 상세',
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/post.png')}
+            title="게시글"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
+    <Stack.Screen
+      name="WritePost"
+      component={WritePost}
+      options={({navigation}) => ({
+        title: '글쓰기',
+        headerLeft: () => (
+          <CustomHeaderLeft
+            navigation={navigation}
+            emojiSource={require('./src/assets/imoticon/write.png')}
+            title="글쓰기"
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
   </Stack.Navigator>
 );
 
@@ -296,11 +344,9 @@ const LoggedInTabs = () => {
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {backgroundColor: '#f8f8f8'},
         })}>
-        <Tab.Screen
-          name="MainHome"
-          component={MainStack}
-          options={{headerShown: false, title: '홈'}}
-        />
+        <Tab.Screen name="MainHome" options={{headerShown: false, title: '홈'}}>
+          {props => <MainStack {...props} />}
+        </Tab.Screen>
         <Tab.Screen
           name="ProgramSchedule"
           component={ProgramSchedule}
@@ -339,6 +385,16 @@ const LoggedInTabs = () => {
           name="Directions"
           component={DirectionsMap}
           options={{title: '오시는 길'}}
+        />
+        <Tab.Screen
+          name="Board"
+          component={BoardScreen}
+          options={{
+            title: '게시판',
+            tabBarIcon: ({color, size}) => (
+              <Icon name="newspaper-outline" color={color} size={size} />
+            ),
+          }}
         />
       </Tab.Navigator>
       <NewsModal
