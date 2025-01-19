@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   Text,
   Dimensions,
-  Platform,
   SafeAreaView,
   Image,
 } from 'react-native';
@@ -31,12 +30,17 @@ const VideoModal = ({visible, onClose, onSkip}) => {
   const contents = [
     {
       type: 'video',
-      source: require('./src/assets/video/chungRaFestival.mp4'),
+      source: require('./src/assets/video/chungRaKongLoGo.mov'),
     },
     {
       type: 'poster',
       image: require('./src/assets/poster/chungRaFestival.jpg'),
       text: '청라콩문화센터에 오신 것을 환영합니다!\n\n청라콩 제2회 정기공연\n2024년 4월',
+    },
+    {
+      type: 'poster',
+      image: require('./src/assets/poster/chungRaSul.jpg'),
+      text: '25일(토) 정상 수업\n26일(일) 휴무\n27일(월)~30일(목) 설 연휴 동안 휴무\n2월 1일(토) 정상 수업',
     },
   ];
 
@@ -64,7 +68,7 @@ const VideoModal = ({visible, onClose, onSkip}) => {
               ))}
             </View>
             <Text style={styles.swipeGuide}>
-              {currentPage === 0 ? '← 옆으로 스와이프하여 더보기' : ''}
+              {currentPage === 0 ? '← 옆으로 스와이프하여 공지사항 더보기' : ''}
             </Text>
           </View>
 
@@ -136,47 +140,78 @@ const VideoModal = ({visible, onClose, onSkip}) => {
 
 function App() {
   const [videoModalVisible, setVideoModalVisible] = useState(false);
+  const [isFirstLaunch, setIsFirstLaunch] = useState(true);
 
   useEffect(() => {
-    const checkLastViewedTime = async () => {
+    const checkFirstLaunch = async () => {
       try {
+        // 앱 최초 실행 또는 24시간 지났는지 확인
+        const firstLaunchValue = await AsyncStorage.getItem('@first_launch');
         const lastViewedTime = await AsyncStorage.getItem(
           '@last_video_view_time',
         );
         const currentTime = new Date().getTime();
 
-        if (
-          !lastViewedTime ||
-          currentTime - parseInt(lastViewedTime) > 24 * 60 * 60 * 1000
-        ) {
-          SplashScreen.hide();
+        console.log('First launch value:', firstLaunchValue);
+        console.log('Last viewed time:', lastViewedTime);
+        console.log('Current time:', currentTime);
+
+        if (!firstLaunchValue) {
+          // 앱 최초 실행
+          await AsyncStorage.setItem('@first_launch', 'false');
           setVideoModalVisible(true);
-        } else {
-          SplashScreen.hide();
+        } else if (
+          !lastViewedTime ||
+          currentTime - parseInt(lastViewedTime) >= 24 * 60 * 60 * 1000
+        ) {
+          // 24시간 이상 지났을 때
+          setVideoModalVisible(true);
         }
       } catch (error) {
-        console.error('Error reading last viewed time:', error);
-        SplashScreen.hide();
+        console.error('모달 표시 중 오류:', error);
         setVideoModalVisible(true);
+      } finally {
+        SplashScreen.hide();
+        setIsFirstLaunch(false);
       }
     };
 
-    const timer = setTimeout(checkLastViewedTime, 500);
-
-    return () => clearTimeout(timer);
+    checkFirstLaunch();
   }, []);
 
   const handleSkip = async () => {
     try {
+      // 24시간 후 다시 보이도록 설정
       await AsyncStorage.setItem(
         '@last_video_view_time',
         new Date().getTime().toString(),
       );
       setVideoModalVisible(false);
     } catch (error) {
-      console.error('Error saving last viewed time:', error);
+      console.error('마지막 시청 시간 저장 중 오류:', error);
     }
   };
+
+  // 모달을 강제로 다시 보이게 하는 함수 추가 (개발/테스트용)
+  const forceShowModal = async () => {
+    try {
+      // AsyncStorage의 마지막 시간을 24시간 이전으로 설정
+      await AsyncStorage.setItem(
+        '@last_video_view_time',
+        (new Date().getTime() - 25 * 60 * 60 * 1000).toString(),
+      );
+
+      // 모달 상태 강제 변경
+      setVideoModalVisible(true);
+    } catch (error) {
+      console.error('모달 강제 표시 중 오류:', error);
+    }
+  };
+
+  // 앱 최초 실행 또는 로딩 중일 때는 아무것도 렌더링하지 않음
+  if (isFirstLaunch) {
+    return null;
+  }
 
   return (
     <Provider store={store}>
@@ -187,6 +222,21 @@ function App() {
           onClose={() => setVideoModalVisible(false)}
           onSkip={handleSkip}
         />
+        {/* 개발 중 디버깅용 버튼 (필요시 주석 해제) */}
+        {__DEV__ && (
+          <TouchableOpacity
+            onPress={forceShowModal}
+            style={{
+              position: 'absolute',
+              top: 50,
+              right: 20,
+              backgroundColor: 'red',
+              padding: 10,
+              borderRadius: 5,
+            }}>
+            <Text style={{color: 'white'}}>공지사항 다시 보기</Text>
+          </TouchableOpacity>
+        )}
       </NavigationContainer>
     </Provider>
   );

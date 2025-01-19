@@ -140,7 +140,33 @@ const MainStack = () => (
     <Stack.Screen
       name="CombinedCNECMU"
       component={CombinedCNECMU}
-      options={{title: '청라콩문화센터'}}
+      options={({navigation}) => ({
+        title: '청라콩문화센터',
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{marginRight: 10}}>
+            <Icon name="arrow-back-outline" size={25} color="#000" />
+          </TouchableOpacity>
+        ),
+        headerTitle: () => (
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Image
+              source={require('./src/assets/profiles/chungRaKong.png')} // 로고 이미지 경로를 실제 경로로 변경
+              style={{
+                width: 80,
+                height: 60,
+                resizeMode: 'contain',
+                marginRight: 0,
+                marginLeft: 0,
+              }}
+            />
+            <Text style={{fontSize: 24, fontWeight: 'bold'}}>
+              청라콩문화센터
+            </Text>
+          </View>
+        ),
+      })}
     />
 
     <Stack.Screen

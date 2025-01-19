@@ -17,10 +17,15 @@ const ProgramSchedule = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Image
+          source={require('../assets/poster/programHead.png')}
+          style={styles.headerImage}
+          resizeMode="cover"
+        />
         <Image
           source={require('../assets/poster/program.jpg')}
-          style={styles.image}
+          style={styles.contentImage}
           resizeMode="contain"
         />
       </ScrollView>
@@ -36,10 +41,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f8f8',
   },
-  image: {
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+  },
+  headerImage: {
+    width: Dimensions.get('window').width,
+    height: 300, // 헤더 이미지의 높이를 고정 값으로 설정
+    marginBottom: -150,
+    marginTop: -7,
+  },
+  contentImage: {
     width: Dimensions.get('window').width,
     height: undefined,
-    aspectRatio: 1080 / 1920, // 이미지의 실제 가로 세로 비율로 조정하세요
+    aspectRatio: 1080 / 1920, // 콘텐츠 이미지의 가로 세로 비율 설정
+    marginTop: 0,
   },
   button: {
     backgroundColor: '#04ca5b',

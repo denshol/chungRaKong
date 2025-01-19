@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   FlatList,
@@ -8,25 +8,59 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
+  Animated,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import LinearGradient from 'react-native-linear-gradient';
+import Reanimated, {
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
+  interpolate,
+} from 'react-native-reanimated';
 
 const {width: SCREEN_WIDTH} = Dimensions.get('window');
+
 const COLORS = {
-  primary: 'rgb(92, 197, 52)', // 인디고
-  secondary: '#6366F1', // 에메랄드
-  accent: '#FF4500 ', // 노란 오렌지
-  text: {
-    primary: '#1F2937',
-    secondary: '#4B5563',
+  primary: {
+    main: 'rgb(155,217,128)',
+    light: 'rgb(125,208,91)',
+    dark: 'rgb(89,194,56)',
+    gradient: ['rgb(155,217,128)', 'rgb(89,194,56)'],
+  },
+  secondary: {
+    main: 'rgb(249,239,129)',
+    light: '#3B82F6',
+    dark: 'rgb(249,239,129)',
+    gradient: ['#2563EB', '#1D4ED8'],
+  },
+  neutral: {
+    50: '#F8FAFC',
+    100: '#F1F5F9',
+    200: '#E2E8F0',
+    300: '#CBD5E1',
+    400: '#94A3B8',
+    500: '#64748B',
+    600: '#475569',
+    700: '#334155',
+    800: '#1E293B',
+    900: '#0F172A',
   },
   background: {
-    primary: '#F9FAFB',
+    default: '#FFFFFF',
+    paper: 'rgba(255, 255, 255, 0.9)',
     card: '#FFFFFF',
   },
-  border: {
-    light: '#E5E7EB',
+  text: {
+    primary: '#0F172A',
+    secondary: '#475569',
+    disabled: '#94A3B8',
+  },
+  glass: {
+    background: 'rgba(255, 255, 255, 0.8)',
+    border: 'rgba(255, 255, 255, 0.18)',
+    shadow: 'rgba(31, 41, 55, 0.1)',
   },
 };
 const branch1Data = [
@@ -283,62 +317,93 @@ const branch1Data = [
   },
 ];
 
+// AnimatedCard.js - 카드 컴포넌트
+const AnimatedCard = Reanimated.createAnimatedComponent(TouchableOpacity);
+const AnimatedLinearGradient =
+  Reanimated.createAnimatedComponent(LinearGradient);
+
 const Item = React.memo(
-  ({title, description, image, onPress, type, branch}) => (
-    <View
-      style={[
-        styles.item,
-        {
-          borderColor: branch === 1 ? COLORS.primary : COLORS.secondary,
-          backgroundColor: COLORS.background.card,
-        },
-      ]}>
-      <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} resizeMode="cover" />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description} numberOfLines={2} ellipsizeMode="tail">
-          {description}
-        </Text>
-        <View style={styles.bottomRow}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                backgroundColor:
-                  branch === 1 ? COLORS.primary : COLORS.secondary,
-              },
-            ]}
-            onPress={onPress}>
-            <Text style={styles.buttonText}>자세히 보기</Text>
-            <Icon
-              name="chevron-forward-outline"
-              size={16}
-              color="#fff"
-              style={{marginLeft: 4}}
-            />
-          </TouchableOpacity>
-          <View
-            style={[
-              styles.badge,
-              {
-                backgroundColor:
-                  type === '청라뮤' ? COLORS.primary : COLORS.secondary,
-              },
-            ]}>
-            <Text style={styles.badgeText}>{type}</Text>
+  ({title, description, image, onPress, type, branch}) => {
+    const scale = useSharedValue(1);
+    const opacity = useSharedValue(1);
+
+    const rStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{scale: scale.value}],
+        opacity: opacity.value,
+      };
+    });
+
+    const onPressIn = () => {
+      scale.value = withSpring(0.98);
+      opacity.value = withSpring(0.9);
+    };
+
+    const onPressOut = () => {
+      scale.value = withSpring(1);
+      opacity.value = withSpring(1);
+    };
+
+    return (
+      <AnimatedCard
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={[rStyle, styles.itemContainer]}>
+        <LinearGradient
+          colors={
+            branch === 1 ? COLORS.primary.gradient : COLORS.secondary.gradient
+          }
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          style={styles.gradientBackground}>
+          <View style={styles.glassContainer}>
+            <View style={styles.imageContainer}>
+              <Image source={image} style={styles.image} resizeMode="cover" />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{title}</Text>
+              <Text
+                style={styles.description}
+                numberOfLines={2}
+                ellipsizeMode="tail">
+                {description}
+              </Text>
+              <View style={styles.bottomRow}>
+                <View style={styles.button}>
+                  <Text style={styles.buttonText}>자세히 보기</Text>
+                  <Icon
+                    name="chevron-forward-outline"
+                    size={16}
+                    color="#fff"
+                    style={{marginLeft: 4}}
+                  />
+                </View>
+                <View
+                  style={[
+                    styles.badge,
+                    {
+                      backgroundColor:
+                        type === '청라뮤'
+                          ? COLORS.secondary.main
+                          : COLORS.primary.main,
+                    },
+                  ]}>
+                  <Text style={styles.badgeText}>{type}</Text>
+                </View>
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
-    </View>
-  ),
+        </LinearGradient>
+      </AnimatedCard>
+    );
+  },
 );
 
 const CombinedCNECMU = () => {
   const navigation = useNavigation();
   const [selectedBranch, setSelectedBranch] = useState(1);
-  // src/pages/CombinedCNECMU.js
+
   const renderItem = useCallback(
     ({item}) => (
       <Item
@@ -348,10 +413,7 @@ const CombinedCNECMU = () => {
         type={item.type}
         branch={selectedBranch}
         onPress={() => {
-          const itemData = {
-            ...item,
-          };
-          navigation.navigate('Detail', itemData);
+          navigation.navigate('Detail', {...item});
         }}
       />
     ),
@@ -362,11 +424,15 @@ const CombinedCNECMU = () => {
     if (selectedBranch === 2) {
       return (
         <View style={styles.preparingContainer}>
-          <Icon name="construct-outline" size={80} color="#4CD964" />
-          <Text style={styles.preparingTitle}>준비 중입니다</Text>
-          <Text style={styles.preparingDescription}>
-            더 나은 서비스로 찾아뵙겠습니다{'\n'}조금만 기다려주세요!
-          </Text>
+          <LinearGradient
+            colors={['rgba(76, 217, 100, 0.1)', 'rgba(76, 217, 100, 0.05)']}
+            style={styles.preparingGradient}>
+            <Icon name="construct-outline" size={80} color="#4CD964" />
+            <Text style={styles.preparingTitle}>준비 중입니다</Text>
+            <Text style={styles.preparingDescription}>
+              더 나은 서비스로 찾아뵙겠습니다{'\n'}조금만 기다려주세요!
+            </Text>
+          </LinearGradient>
         </View>
       );
     }
@@ -377,6 +443,7 @@ const CombinedCNECMU = () => {
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       />
     );
   };
@@ -390,7 +457,7 @@ const CombinedCNECMU = () => {
           <Icon
             name="home-outline"
             size={24}
-            color={selectedBranch === 1 ? 'white' : '#007AFF'}
+            color={selectedBranch === 1 ? 'white' : COLORS.primary.main}
           />
           <Text
             style={[
@@ -406,7 +473,7 @@ const CombinedCNECMU = () => {
           <Icon
             name="business-outline"
             size={24}
-            color={selectedBranch === 2 ? 'white' : '#4CD964'}
+            color={selectedBranch === 2 ? 'white' : COLORS.secondary.main}
           />
           <Text
             style={[
@@ -425,103 +492,126 @@ const CombinedCNECMU = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background.primary,
+    backgroundColor: COLORS.background.default,
   },
-  item: {
+  itemContainer: {
+    marginBottom: 16,
+    borderRadius: 24,
+    overflow: 'hidden',
+    elevation: 8,
+    shadowColor: COLORS.glass.shadow,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+  },
+  gradientBackground: {
+    borderRadius: 24,
+    padding: 1,
+  },
+  glassContainer: {
     flexDirection: 'row',
     padding: 16,
-    marginBottom: 16,
-    borderRadius: 20,
+    backgroundColor: COLORS.glass.background,
+    borderRadius: 23,
     borderWidth: 1,
-    borderColor: COLORS.border.light,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 8},
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 3,
-    backgroundColor: COLORS.background.card,
+    borderColor: COLORS.glass.border,
   },
   imageContainer: {
     width: SCREEN_WIDTH * 0.22,
-    height: SCREEN_WIDTH * 0.22, // aspectRatio 대신 명시적 height 설정
+    height: SCREEN_WIDTH * 0.22,
     borderRadius: SCREEN_WIDTH * 0.11,
     overflow: 'hidden',
     marginRight: 16,
     backgroundColor: COLORS.background.card,
-    justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 4,
+    shadowColor: COLORS.glass.shadow,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover', // 이미지가 컨테이너를 꽉 채우도록
+    resizeMode: 'cover',
   },
-
+  textContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
     color: COLORS.text.primary,
     letterSpacing: -0.5,
     marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.text.secondary,
     lineHeight: 20,
     marginBottom: 12,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: 'transparent',
   },
   buttonText: {
-    color: '#FFF',
+    color: COLORS.text.primary,
     fontSize: 14,
     fontWeight: '600',
     letterSpacing: -0.3,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   badge: {
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 12,
+    backgroundColor: COLORS.primary.main,
   },
   badgeText: {
-    color: '#FFF',
+    color: '#333',
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: -0.2,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   preparingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    padding: 20,
+  },
+  preparingGradient: {
+    width: '100%',
+    padding: 32,
+    borderRadius: 24,
+    alignItems: 'center',
   },
   preparingTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: COLORS.primary,
+    color: COLORS.text.primary,
     marginTop: 20,
     marginBottom: 10,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   preparingDescription: {
     fontSize: 16,
     color: COLORS.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -534,22 +624,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderRadius: 20,
+    paddingVertical: 12,
+    borderRadius: 16,
     marginHorizontal: 5,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: COLORS.neutral[100],
   },
   selectedTab1: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.primary.main,
   },
   selectedTab2: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.secondary.main,
   },
   tabText: {
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 5,
     color: COLORS.text.primary,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   selectedTabText: {
     color: 'white',
@@ -558,15 +649,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
 });
+
 export default CombinedCNECMU;
