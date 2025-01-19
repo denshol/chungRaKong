@@ -10,6 +10,7 @@ import {
   Dimensions,
   Linking,
   Platform,
+  FlatList,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -21,6 +22,8 @@ const Detail = ({route, navigation}) => {
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+  const [currentModalIndex, setCurrentModalIndex] = useState(0);
+  const [isInstructorImage, setIsInstructorImage] = useState(false);
 
   const {
     title,
@@ -39,15 +42,17 @@ const Detail = ({route, navigation}) => {
     });
   };
 
-  const handleImagePress = image => {
+  const handleImagePress = (image, index, isInstructorImage = false) => {
     setSelectedImage(image);
+    setCurrentModalIndex(index);
+    setIsInstructorImage(isInstructorImage);
     setIsImageModalVisible(true);
   };
 
   const renderGallery = () => {
     if (!posters || posters.length === 0) {
       return (
-        <TouchableOpacity onPress={() => handleImagePress(poster)}>
+        <TouchableOpacity onPress={() => handleImagePress(poster, 0)}>
           <Image
             source={poster}
             style={styles.singlePoster}
@@ -74,13 +79,12 @@ const Detail = ({route, navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.posterContainer}
-              onPress={() => handleImagePress(item)}>
+              onPress={() => handleImagePress(item, index)}>
               <Image source={item} style={styles.poster} resizeMode="contain" />
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* 페이지네이션 */}
         <View style={styles.paginationContainer}>
           {posters.map((_, index) => (
             <View
@@ -93,11 +97,9 @@ const Detail = ({route, navigation}) => {
           ))}
         </View>
 
-        {/* 더 많은 이미지 보기 버튼 */}
         <TouchableOpacity
           style={styles.moreImagesButton}
           onPress={() => {
-            console.log('타이틀:', title);
             navigation.navigate('PhotoGallery', {
               title: title,
               type: type,
@@ -130,11 +132,62 @@ const Detail = ({route, navigation}) => {
               accessibilityLabel="모달 닫기">
               <Icon name="close-circle" size={35} color="#fff" />
             </TouchableOpacity>
-            <Image
-              source={selectedImage || poster}
-              style={styles.modalImage}
-              resizeMode="contain"
-            />
+
+            {isInstructorImage ? (
+              <View style={styles.modalImageContainer}>
+                <Image
+                  source={selectedImage}
+                  style={styles.modalImage}
+                  resizeMode="contain"
+                />
+              </View>
+            ) : (
+              <>
+                <FlatList
+                  data={posters}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  initialScrollIndex={currentModalIndex}
+                  getItemLayout={(data, index) => ({
+                    length: SCREEN_WIDTH,
+                    offset: SCREEN_WIDTH * index,
+                    index,
+                  })}
+                  renderItem={({item}) => (
+                    <View style={styles.modalImageContainer}>
+                      <Image
+                        source={item}
+                        style={styles.modalImage}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  )}
+                  keyExtractor={(_, index) => index.toString()}
+                  onMomentumScrollEnd={event => {
+                    const newIndex = Math.round(
+                      event.nativeEvent.contentOffset.x / SCREEN_WIDTH,
+                    );
+                    setCurrentModalIndex(newIndex);
+                  }}
+                />
+
+                {posters && posters.length > 1 && (
+                  <View style={styles.modalPaginationContainer}>
+                    {posters.map((_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.modalPaginationDot,
+                          currentModalIndex === index &&
+                            styles.modalActivePaginationDot,
+                        ]}
+                      />
+                    ))}
+                  </View>
+                )}
+              </>
+            )}
           </View>
         </Modal>
 
@@ -168,12 +221,17 @@ const Detail = ({route, navigation}) => {
                     </Text>
                   ) : instructor.introduction &&
                     instructor.introduction.image ? (
-                    <Image
-                      source={instructor.introduction.image}
-                      style={styles.instructorImage}
-                      accessible={true}
-                      accessibilityLabel={`${instructor.name} 강사 프로필 이미지`}
-                    />
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleImagePress(instructor.introduction.image, 0, true)
+                      }>
+                      <Image
+                        source={instructor.introduction.image}
+                        style={styles.instructorImage}
+                        accessible={true}
+                        accessibilityLabel={`${instructor.name} 강사 프로필 이미지`}
+                      />
+                    </TouchableOpacity>
                   ) : null}
                 </View>
               ))}
@@ -197,30 +255,35 @@ const Detail = ({route, navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   content: {
-    padding: 16,
     paddingBottom: Platform.OS === 'ios' ? 100 : 80,
   },
   scrollViewContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  singlePoster: {
-    width: SCREEN_WIDTH - 32,
-    height: (SCREEN_WIDTH - 32) * (9 / 16),
-    alignSelf: 'center',
-    backgroundColor: '#f8f8f8',
-  },
   galleryContainer: {
-    marginBottom: 16,
+    marginBottom: 24,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 20,
+    padding: 16,
+    overflow: 'hidden',
   },
   posterContainer: {
     width: SCREEN_WIDTH - 32,
     height: (SCREEN_WIDTH - 32) * (9 / 16),
     marginRight: 16,
     borderRadius: 12,
+    backgroundColor: '#f8f8f8',
+    overflow: 'hidden',
+  },
+  singlePoster: {
+    width: SCREEN_WIDTH - 32,
+    height: (SCREEN_WIDTH - 32) * (9 / 16),
+    borderRadius: 12,
+    overflow: 'hidden',
     backgroundColor: '#f8f8f8',
   },
   poster: {
@@ -232,153 +295,204 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 16,
   },
   paginationDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#ccc',
-    marginHorizontal: 5,
+    backgroundColor: '#DDD',
+    marginHorizontal: 4,
   },
   activePaginationDot: {
-    backgroundColor: '#333',
     width: 12,
     height: 12,
+    backgroundColor: '#59C231',
   },
   moreImagesButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(89, 194, 49, 0.8)',
+    backgroundColor: '#59C231',
     padding: 12,
-    borderRadius: 8,
-    marginTop: 10,
-    marginHorizontal: 16,
+    borderRadius: 12,
+    marginTop: 16,
   },
   moreImagesButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginLeft: 8,
   },
-  // 나머지 기존 스타일들은 그대로 유지
   modalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  modalImageContainer: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalImage: {
-    width: SCREEN_WIDTH,
+    width: SCREEN_WIDTH * 0.9,
     height: SCREEN_HEIGHT * 0.7,
     resizeMode: 'contain',
   },
   modalCloseButton: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 40 : 20,
+    top: Platform.OS === 'ios' ? 50 : 30,
     right: 20,
-    zIndex: 1,
+    zIndex: 2,
     padding: 10,
+  },
+  modalPaginationContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalPaginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    marginHorizontal: 4,
+  },
+  modalActivePaginationDot: {
+    backgroundColor: '#fff',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   textContainer: {
     flex: 1,
+    padding: 24,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: -20,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: -4},
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    letterSpacing: -0.8,
+    marginBottom: 16,
+    lineHeight: 38,
   },
   description: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
-    lineHeight: 24,
+    fontSize: 18,
+    color: '#4A4A4A',
+    lineHeight: 28,
+    marginBottom: 24,
+    fontWeight: '400',
   },
   benefitContainer: {
-    backgroundColor: '#f0f8ff',
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
+    backgroundColor: 'rgba(89, 194, 49, 0.08)',
+    borderRadius: 20,
+    padding: 24,
+    marginVertical: 24,
     borderWidth: 1,
-    borderColor: '#4169e1',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    borderColor: 'rgba(89, 194, 49, 0.15)',
   },
   benefitText: {
-    color: '#4169e1',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    lineHeight: 24,
+    color: '#2E7D32',
+    fontSize: 17,
+    fontWeight: '600',
+    lineHeight: 26,
+    textAlign: 'left',
   },
   section: {
-    marginTop: 24,
+    marginTop: 36,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 3,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#333',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    letterSpacing: -0.5,
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#59C231',
+    paddingLeft: 12,
   },
   curriculum: {
-    fontSize: 15,
-    color: '#666',
-    lineHeight: 24,
+    fontSize: 17,
+    color: '#4A4A4A',
+    lineHeight: 28,
+    fontWeight: '400',
   },
   instructorContainer: {
-    marginBottom: 16,
+    marginBottom: 28,
+    backgroundColor: '#F8F9FA',
+    borderRadius: 16,
+    padding: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#59C231',
   },
   instructorName: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    letterSpacing: -0.3,
+    marginBottom: 12,
   },
   instructorIntro: {
-    fontSize: 15,
-    color: '#666',
-    lineHeight: 24,
+    fontSize: 16,
+    color: '#4A4A4A',
+    lineHeight: 26,
+    fontWeight: '400',
   },
   instructorImage: {
     width: '100%',
-    height: 200,
+    height: undefined,
+    aspectRatio: 16 / 9,
     resizeMode: 'contain',
-    marginTop: 10,
-    borderRadius: 8,
+    borderRadius: 12,
+    marginTop: 16,
+    marginBottom: 16,
+    backgroundColor: '#f8f8f8',
   },
   callButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#04ca5b',
-    padding: 15,
+    backgroundColor: '#59C231',
+    padding: 20,
+    margin: 16,
+    borderRadius: 16,
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
   },
   callButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 8,
+    fontWeight: '700',
+    marginLeft: 10,
+    letterSpacing: -0.3,
   },
 });
 

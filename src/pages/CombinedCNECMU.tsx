@@ -75,7 +75,7 @@ const branch1Data = [
     title: '바이올린',
     description: '바이올린 레슨입니다!',
     image: require('../assets/thumbnail/chungRaViolinThumb.jpg'),
-    poster: require('../assets/violin.png'),
+
     instructors: [
       {
         name: '이루리',
@@ -89,10 +89,7 @@ const branch1Data = [
     title: '첼로',
     description: '첼로 레슨입니다!',
     image: require('../assets/thumbnail/chungRaCheloThumb.jpg'),
-    posters: [
-      require('../assets/poster/chelo_teacher.jpg'),
-      require('../assets/chelo.png'),
-    ],
+    posters: [require('../assets/poster/chelo_teacher.jpg')],
     instructors: [
       {
         name: '고희민',

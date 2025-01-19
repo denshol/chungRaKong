@@ -21,10 +21,6 @@ import SignIn from './src/pages/SignIn';
 import SignUp from './src/pages/SignUp';
 import HomeScreen from './src/pages/HomeScreen';
 import CombinedCNECMU from './src/pages/CombinedCNECMU';
-import CNE from './src/pages/CNE';
-import CMU from './src/pages/CMU';
-import VideoBoard from './src/pages/VideoBoard';
-import VideoDetail from './src/pages/VideoDetail';
 import Notifications from './src/pages/Notifications';
 import Settings from './src/pages/Settings';
 import Detail from './src/pages/Detail';
@@ -146,62 +142,7 @@ const MainStack = () => (
       component={CombinedCNECMU}
       options={{title: '청라콩문화센터'}}
     />
-    <Stack.Screen
-      name="CNE"
-      component={CNE}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <CustomHeaderLeft
-            navigation={navigation}
-            emojiSource={require('./src/assets/imoticon/openBook.png')}
-            title="청라 NE"
-          />
-        ),
-        headerTitle: '',
-      })}
-    />
-    <Stack.Screen
-      name="CMU"
-      component={CMU}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <CustomHeaderLeft
-            navigation={navigation}
-            emojiSource={require('./src/assets/imoticon/guitar.png')}
-            title="청라뮤"
-          />
-        ),
-        headerTitle: '',
-      })}
-    />
-    <Stack.Screen
-      name="VideoBoard"
-      component={VideoBoard}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <CustomHeaderLeft
-            navigation={navigation}
-            emojiSource={require('./src/assets/imoticon/video.png')}
-            title="강의 영상"
-          />
-        ),
-        headerTitle: '',
-      })}
-    />
-    <Stack.Screen
-      name="VideoDetail"
-      component={VideoDetail}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <CustomHeaderLeft
-            navigation={navigation}
-            emojiSource={require('./src/assets/imoticon/video.png')}
-            title="강의 영상"
-          />
-        ),
-        headerTitle: '',
-      })}
-    />
+
     <Stack.Screen
       name="Notifications"
       component={Notifications}
