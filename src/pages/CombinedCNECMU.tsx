@@ -65,6 +65,30 @@ const COLORS = {
 };
 const branch1Data = [
   {
+    id: 'cne4',
+    title: '필라테스',
+    description: '필라테스 레슨입니다! 몸과 마음을 가볍게 만들어보세요!',
+    image: require('../assets/profiles/PilatesTeacher2.jpg'),
+    poster: require('../assets/poster/chungRaPilates.jpg'),
+    isNew: true, // 새로운 필드 추가
+    curriculum: `\n[이런 분들께 추천드립니다]\n- 필라테스를 처음 시작하시는 분\n- 몸과 마음을 가볍게 만들고 싶으신 분\n- 본격적인 필라테스 연습을 원하시는 분\n\n필라테스는 몸과 마음을 가볍게 만드는 운동입니다. 기본기를 중시하면서도 학생 개개인의 몸 상태와 목표에 맞춘 맞춤형 교육을 지향합니다.`,
+    instructors: [
+      {
+        name: '신윤희',
+        introduction: {
+          image: require('../assets/profiles/PilatesTeacher2.jpg'),
+        },
+      },
+      {
+        name: '',
+        introduction: {
+          image: require('../assets/profiles/chungRaPilates3.png'),
+        },
+      },
+    ],
+    type: '청라NE',
+  },
+  {
     id: 'cmu1',
     title: '통기타',
     description: `안녕하세요! 통기타 강사 유준영입니다. 통기타의 기초부터 실전까지 체계적으로 배워보세요!`,
@@ -322,8 +346,9 @@ const AnimatedCard = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedLinearGradient =
   Reanimated.createAnimatedComponent(LinearGradient);
 
+// Item 컴포넌트를 수정합니다
 const Item = React.memo(
-  ({title, description, image, onPress, type, branch}) => {
+  ({title, description, image, onPress, type, branch, isNew}) => {
     const scale = useSharedValue(1);
     const opacity = useSharedValue(1);
 
@@ -358,8 +383,14 @@ const Item = React.memo(
           end={{x: 1, y: 1}}
           style={styles.gradientBackground}>
           <View style={styles.glassContainer}>
+            {/* 이미지 컨테이너 부분 */}
             <View style={styles.imageContainer}>
               <Image source={image} style={styles.image} resizeMode="cover" />
+              {isNew && (
+                <View style={styles.newBadge}>
+                  <Text style={styles.newBadgeText}>NEW</Text>
+                </View>
+              )}
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.title}>{title}</Text>
@@ -412,6 +443,7 @@ const CombinedCNECMU = () => {
         image={item.image}
         type={item.type}
         branch={selectedBranch}
+        isNew={item.isNew} // isNew prop 추가
         onPress={() => {
           navigation.navigate('Detail', {...item});
         }}
@@ -520,7 +552,6 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * 0.22,
     height: SCREEN_WIDTH * 0.22,
     borderRadius: SCREEN_WIDTH * 0.11,
-    overflow: 'hidden',
     marginRight: 16,
     backgroundColor: COLORS.background.card,
     elevation: 4,
@@ -528,11 +559,14 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 8,
+    position: 'relative',
+    zIndex: 1,
   },
+
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    borderRadius: SCREEN_WIDTH * 0.11,
   },
   textContainer: {
     flex: 1,
@@ -648,6 +682,31 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 16,
     paddingVertical: 20,
+  },
+  newBadge: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    transform: [{rotate: '15deg'}],
+    zIndex: 1,
+  },
+  newBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '900',
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    letterSpacing: 0.5,
   },
 });
 
