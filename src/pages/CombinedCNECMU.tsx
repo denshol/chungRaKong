@@ -685,28 +685,23 @@ const styles = StyleSheet.create({
   },
   newBadge: {
     position: 'absolute',
-    top: -10,
-    right: -10,
+    right: -4, // -6에서 -4로 수정
+    top: -2, // -3에서 -2로 수정
     backgroundColor: '#FF3B30',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-    transform: [{rotate: '15deg'}],
+    borderRadius: 6, // 8에서 6으로 수정
+    minWidth: 12, // 16에서 12로 수정
+    height: 12, // 16에서 12로 수정
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.5, // 1에서 0.5로 수정
+    borderColor: '#fff',
     zIndex: 1,
   },
   newBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '900',
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    letterSpacing: 0.5,
+    color: '#fff',
+    fontSize: 8, // 10에서 8로 수정
+    fontWeight: 'bold',
+    paddingHorizontal: 2, // 3에서 2로 수정
   },
 });
 

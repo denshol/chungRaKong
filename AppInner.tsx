@@ -1,4 +1,3 @@
-// AppInner.js
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -30,6 +29,9 @@ import DirectionsMap from './src/pages/DirectionMaps';
 import ProgramSchedule from './src/pages/ProgramSchedules';
 import PhotoGallery from './src/pages/PhotoGallery';
 import ClassGallery from './src/pages/ClassGallery';
+import BoardScreen from './src/pages/board/BoardScreen';
+import CreatePostScreen from './src/pages/board/CreatePostScreen';
+import PostDetailScreen from './src/pages/board/PostDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -142,11 +144,10 @@ const MainStack = () => (
       component={CombinedCNECMU}
       options={({navigation}) => ({
         title: '청라콩문화센터',
-
         headerTitle: () => (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image
-              source={require('./src/assets/profiles/chungRaKong.png')} // 로고 이미지 경로를 실제 경로로 변경
+              source={require('./src/assets/profiles/chungRaKong.png')}
               style={{
                 width: 80,
                 height: 60,
@@ -162,7 +163,6 @@ const MainStack = () => (
         ),
       })}
     />
-
     <Stack.Screen
       name="Notifications"
       component={Notifications}
@@ -206,13 +206,31 @@ const MainStack = () => (
         headerTitle: '',
       })}
     />
+    <Stack.Screen
+      name="Board"
+      component={BoardScreen}
+      options={{title: '게시판'}}
+    />
+    <Stack.Screen
+      name="CreatePost"
+      component={CreatePostScreen}
+      options={{title: '게시글 작성'}}
+    />
+    <Stack.Screen
+      name="PostDetail"
+      component={PostDetailScreen}
+      options={{title: '게시글'}}
+    />
   </Stack.Navigator>
 );
 
 const TabBarCustomButton = ({children, onPress}) => (
   <TouchableOpacity
-    style={styles.tabBarCustomButton}
-    activeOpacity={0.8}
+    style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
     onPress={onPress}>
     {children}
   </TouchableOpacity>
@@ -224,6 +242,7 @@ const LoggedInTabs = () => {
     program: true,
     gallery: true,
     youtube: true,
+    board: true,
   });
 
   const hideBadge = tabName => {
@@ -233,8 +252,6 @@ const LoggedInTabs = () => {
     }));
   };
 
-  // LoggedInTabs 컴포넌트 내부의 Tab.Navigator 부분을 수정
-
   return (
     <>
       <Tab.Navigator
@@ -243,10 +260,6 @@ const LoggedInTabs = () => {
             let iconName;
             if (route.name === 'MainHome') {
               iconName = 'home-outline';
-              return <Icon name={iconName} color={color} size={size} />;
-            } else if (route.name === 'Notice') {
-              iconName = 'megaphone-outline';
-              return <Icon name={iconName} color={color} size={size} />;
             } else if (route.name === 'ProgramSchedule') {
               return (
                 <View>
@@ -280,9 +293,19 @@ const LoggedInTabs = () => {
                   )}
                 </View>
               );
+            } else if (route.name === 'Board') {
+              return (
+                <View>
+                  <Icon name="clipboard-outline" color={color} size={size} />
+                  {showBadges.board && (
+                    <View style={styles.badgeContainer}>
+                      <Text style={styles.badgeText}>N</Text>
+                    </View>
+                  )}
+                </View>
+              );
             } else if (route.name === 'Directions') {
               iconName = 'map-outline';
-              return <Icon name={iconName} color={color} size={size} />;
             }
             return <Icon name={iconName} color={color} size={size} />;
           },
@@ -299,6 +322,14 @@ const LoggedInTabs = () => {
           options={{title: '프로그램'}}
           listeners={{
             tabPress: () => hideBadge('program'),
+          }}
+        />
+        <Tab.Screen
+          name="Board"
+          component={BoardScreen}
+          options={{title: '게시판'}}
+          listeners={{
+            tabPress: () => hideBadge('board'),
           }}
         />
         <Tab.Screen
@@ -347,7 +378,7 @@ function AppInner() {
   }, []);
 
   return (
-    <KeyboardAvoidingComponent>
+    <View style={{flex: 1}}>
       <Drawer.Navigator
         drawerContent={props => <DrawerContent {...props} />}
         screenOptions={{
@@ -356,7 +387,7 @@ function AppInner() {
         }}>
         <Drawer.Screen name="Main" component={LoggedInTabs} />
       </Drawer.Navigator>
-    </KeyboardAvoidingComponent>
+    </View>
   );
 }
 
@@ -476,6 +507,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingHorizontal: 3,
   },
+  wrapper: {},
 });
 
 export default AppInner;
