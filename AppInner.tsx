@@ -28,10 +28,6 @@ import KeyboardAvoidingComponent from './src/components/KeyboardAvoidingComponen
 import DirectionsMap from './src/pages/DirectionMaps';
 import ProgramSchedule from './src/pages/ProgramSchedules';
 import PhotoGallery from './src/pages/PhotoGallery';
-import ClassGallery from './src/pages/ClassGallery';
-import BoardScreen from './src/pages/board/BoardScreen';
-import CreatePostScreen from './src/pages/board/CreatePostScreen';
-import PostDetailScreen from './src/pages/board/PostDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -47,28 +43,7 @@ const CustomHeaderLeft = ({navigation, emojiSource, title}) => (
   </View>
 );
 
-const AnimatedHeaderText = () => {
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  return (
-    <TouchableOpacity
-      onPress={() =>
-        Linking.openURL('https://lordslove125.wixsite.com/church-site')
-      }>
-      <Animated.Text style={[styles.headerLogoText, {opacity: fadeAnim}]}>
-        주님의사랑교회
-      </Animated.Text>
-    </TouchableOpacity>
-  );
-};
 
 const NewsModal = ({visible, onClose}) => {
   const images = [
@@ -163,21 +138,9 @@ const MainStack = () => (
         ),
       })}
     />
-    <Stack.Screen
-      name="Notifications"
-      component={Notifications}
-      options={{title: '알림'}}
-    />
-    <Stack.Screen
-      name="Settings"
-      component={Settings}
-      options={{title: '설정'}}
-    />
-    <Stack.Screen
-      name="Detail"
-      component={Detail}
-      options={{title: '상세 정보'}}
-    />
+    
+  
+    
     <Stack.Screen
       name="PhotoGallery"
       component={PhotoGallery}
@@ -192,35 +155,8 @@ const MainStack = () => (
         headerTitle: '',
       })}
     />
-    <Stack.Screen
-      name="ClassGallery"
-      component={ClassGallery}
-      options={({navigation}) => ({
-        headerLeft: () => (
-          <CustomHeaderLeft
-            navigation={navigation}
-            emojiSource={require('./src/assets/imoticon/camera.png')}
-            title="수업 사진"
-          />
-        ),
-        headerTitle: '',
-      })}
-    />
-    <Stack.Screen
-      name="Board"
-      component={BoardScreen}
-      options={{title: '게시판'}}
-    />
-    <Stack.Screen
-      name="CreatePost"
-      component={CreatePostScreen}
-      options={{title: '게시글 작성'}}
-    />
-    <Stack.Screen
-      name="PostDetail"
-      component={PostDetailScreen}
-      options={{title: '게시글'}}
-    />
+   
+  
   </Stack.Navigator>
 );
 
@@ -324,14 +260,7 @@ const LoggedInTabs = () => {
             tabPress: () => hideBadge('program'),
           }}
         />
-        <Tab.Screen
-          name="Board"
-          component={BoardScreen}
-          options={{title: '게시판'}}
-          listeners={{
-            tabPress: () => hideBadge('board'),
-          }}
-        />
+       
         <Tab.Screen
           name="PhotoGallery"
           component={PhotoGallery}
