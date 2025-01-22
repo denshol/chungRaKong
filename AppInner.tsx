@@ -43,8 +43,6 @@ const CustomHeaderLeft = ({navigation, emojiSource, title}) => (
   </View>
 );
 
-
-
 const NewsModal = ({visible, onClose}) => {
   const images = [
     require('./src/assets/news/modal1.jpg'),
@@ -138,9 +136,7 @@ const MainStack = () => (
         ),
       })}
     />
-    
-  
-    
+
     <Stack.Screen
       name="PhotoGallery"
       component={PhotoGallery}
@@ -155,8 +151,21 @@ const MainStack = () => (
         headerTitle: '',
       })}
     />
-   
-  
+    <Stack.Screen
+      name="Detail"
+      component={Detail}
+      options={({route, navigation}) => ({
+        // navigation을 여기서 받아옵니다
+        headerLeft: () => (
+          // 함수 형태로 변경
+          <CustomHeaderLeft
+            navigation={navigation} // navigation을 직접 전달
+            title={route.params?.title || '상세정보'}
+          />
+        ),
+        headerTitle: '',
+      })}
+    />
   </Stack.Navigator>
 );
 
@@ -260,7 +269,7 @@ const LoggedInTabs = () => {
             tabPress: () => hideBadge('program'),
           }}
         />
-       
+
         <Tab.Screen
           name="PhotoGallery"
           component={PhotoGallery}
