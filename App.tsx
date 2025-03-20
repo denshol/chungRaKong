@@ -28,19 +28,24 @@ const VideoModal = ({visible, onClose, onSkip}) => {
   const [currentPage, setCurrentPage] = useState(0);
 
   const contents = [
-    {
-      type: 'video',
-      source: require('./src/assets/video/chungRaKongLoGo.mov'),
-    },
+    // {
+    //   type: 'video',
+    //   source: require('./src/assets/video/chungRaKongLoGo.mov'),
+    // },
     {
       type: 'poster',
       image: require('./src/assets/poster/chungRaFestival.jpg'),
-      text: '청라콩문화센터에 오신 것을 환영합니다!\n\n청라콩 제2회 정기공연\n2024년 4월',
+      text: '청라콩문화센터에 오신 것을 환영합니다!\n\n청라콩 제2회 정기공연\n2024년 4월 26일',
     },
     {
       type: 'poster',
-      image: require('./src/assets/poster/chungRaSul.jpg'),
-      text: '25일(토) 정상 수업\n26일(일) 휴무\n27일(월)~30일(목) 설 연휴 동안 휴무\n2월 1일(토) 정상 수업',
+      image: require('./src/assets/poster/chungRaElecHan.jpg'),
+      text: '청라콩문화센터에 전기기능교육강좌가 신설되었습니다!',
+    },
+    {
+      type: 'poster',
+      image: require('./src/assets/poster/chungRaUkelelePoster.jpg'),
+      text: '청라콩문화센터에 우쿨렐레강좌가 신설되었습니다.',
     },
   ];
 

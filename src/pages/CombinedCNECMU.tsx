@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import {
   View,
   FlatList,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,
-  Animated,
+  Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,11 +17,11 @@ import Reanimated, {
   useAnimatedStyle,
   withSpring,
   useSharedValue,
-  interpolate,
 } from 'react-native-reanimated';
 
 const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
+// 색상 상수를 외부로 분리하여 재사용성 향상
 const COLORS = {
   primary: {
     main: 'rgb(155,217,128)',
@@ -63,7 +63,49 @@ const COLORS = {
     shadow: 'rgba(31, 41, 55, 0.1)',
   },
 };
+
+// 데이터 분리 - 실제 앱에서는 별도 파일로 분리하는 것을 권장
+// branch1Data는 원본 데이터를 그대로 유지하므로 여기서는 생략
 const branch1Data = [
+  {
+    id: 'cmu11',
+    title: '우쿨렐레',
+    description: '우쿨렐레 레슨입니다! 가벼운마음으로 도전해보세요!',
+    image: require('../assets/thumbnail/chungRaUkeleleThumb.jpg'),
+    poster: require('../assets/poster/chungRaUkelelePoster.jpg'),
+    isNew: true, // 새로운 강의로 표시
+    curriculum: `\n[이런 분들께 추천드립니다]\n- 우쿨렐레를 처음 시작하시는 분\n- 다양한 장르의 곡을 배우고 싶으신 분\n- 쉽고 간편하게 악기를 배우고 싶으신 분\n- 취미로 음악을 즐기고 싶으신 분\n\n우쿨렐레는 가벼운 마음으로 즐길 수 있는 악기입니다. 누구나 쉽게, 즐겁게 연주할 수 있도록 맞춤형 교육을 진행합니다.`,
+    instructors: [
+      {
+        name: '윤영희',
+        introduction:
+          '우쿨렐레 전공(자격증 취득) 및 연주자\n청라콩 문화센터 우쿨렐레 강사',
+      },
+    ],
+    type: '청라뮤',
+  },
+  {
+    id: 'cne5',
+    title: '전기분야 자격증 취득대비',
+    description: '전기 이론부터 실전까지, 자격증 취득을 위한 체계적인 교육과정',
+    image: require('../assets/poster/chungRaElecHan.jpg'), // 이미지 경로는 실제 파일 위치에 맞게 수정해주세요
+    poster: require('../assets/poster/chungRaElecHan.jpg'), // 포스터 이미지 경로는 실제 파일 위치에 맞게 수정해주세요
+    isNew: true, // 새로운 강의로 표시
+    curriculum: `\n[이런 분들께 추천드립니다]\n- 전기 분야에 입문하고 싶으신 분\n- 전기기능사 자격증 취득을 준비하시는 분\n- 전기 이론부터 실무까지 배우고 싶으신 분\n- 취업이나 이직을 위해 전문 기술을 습득하고자 하는 분\n\n전기기능사 자격증 취득을 위한 체계적인 교육 과정을 제공합니다. 이론 수업과 함께 실습 교육을 병행하여 실전에서 바로 활용할 수 있는 기술을 배울 수 있습니다.`,
+    instructors: [
+      {
+        name: '한찬호',
+        introduction: `- 숭실대학교 전기공학석사
+- 건축전기설비기술사 자격의 3종 취득
+- ○○ (주) 전기설비 소장
+- (주)성우실계연구소 소장
+- ○○공과학원 기술사 전임교수
+- (前) 인하공업전문대학 전기과 겸임교수
+- (주)○○이앤씨 소장 재직중`,
+      },
+    ],
+    type: '청라NE',
+  },
   {
     id: 'cne4',
     title: '필라테스',
@@ -81,9 +123,7 @@ const branch1Data = [
       },
       {
         name: '',
-        introduction: {
-          image: require('../assets/profiles/chungRaPilates3.png'),
-        },
+        introduction: `필라테스지도자 자격증\n\nFISAF 국제트레이너자격증\n\n해부학 수료`,
       },
     ],
     type: '청라NE',
@@ -340,18 +380,19 @@ const branch1Data = [
     type: '청라NE',
   },
 ];
-
-// AnimatedCard.js - 카드 컴포넌트
+// AnimatedCard 컴포넌트 정의
 const AnimatedCard = Reanimated.createAnimatedComponent(TouchableOpacity);
 const AnimatedLinearGradient =
   Reanimated.createAnimatedComponent(LinearGradient);
 
-// Item 컴포넌트를 수정합니다
+// Item 컴포넌트 - React.memo로 최적화
 const Item = React.memo(
   ({title, description, image, onPress, type, branch, isNew}) => {
+    // 애니메이션 값 정의
     const scale = useSharedValue(1);
     const opacity = useSharedValue(1);
 
+    // 애니메이션 스타일 정의
     const rStyle = useAnimatedStyle(() => {
       return {
         transform: [{scale: scale.value}],
@@ -359,15 +400,24 @@ const Item = React.memo(
       };
     });
 
-    const onPressIn = () => {
+    // 터치 이벤트 핸들러
+    const onPressIn = useCallback(() => {
       scale.value = withSpring(0.98);
       opacity.value = withSpring(0.9);
-    };
+    }, [scale, opacity]);
 
-    const onPressOut = () => {
+    const onPressOut = useCallback(() => {
       scale.value = withSpring(1);
       opacity.value = withSpring(1);
-    };
+    }, [scale, opacity]);
+
+    // 브랜치에 따른 그라데이션 색상 설정
+    const gradientColors =
+      branch === 1 ? COLORS.primary.gradient : COLORS.secondary.gradient;
+
+    // 타입에 따른 배지 색상 설정
+    const badgeColor =
+      type === '청라뮤' ? COLORS.secondary.main : COLORS.primary.main;
 
     return (
       <AnimatedCard
@@ -376,14 +426,12 @@ const Item = React.memo(
         onPressOut={onPressOut}
         style={[rStyle, styles.itemContainer]}>
         <LinearGradient
-          colors={
-            branch === 1 ? COLORS.primary.gradient : COLORS.secondary.gradient
-          }
+          colors={gradientColors}
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
           style={styles.gradientBackground}>
           <View style={styles.glassContainer}>
-            {/* 이미지 컨테이너 부분 */}
+            {/* 이미지 컨테이너 */}
             <View style={styles.imageContainer}>
               <Image source={image} style={styles.image} resizeMode="cover" />
               {isNew && (
@@ -410,16 +458,7 @@ const Item = React.memo(
                     style={{marginLeft: 4}}
                   />
                 </View>
-                <View
-                  style={[
-                    styles.badge,
-                    {
-                      backgroundColor:
-                        type === '청라뮤'
-                          ? COLORS.secondary.main
-                          : COLORS.primary.main,
-                    },
-                  ]}>
+                <View style={[styles.badge, {backgroundColor: badgeColor}]}>
                   <Text style={styles.badgeText}>{type}</Text>
                 </View>
               </View>
@@ -431,10 +470,15 @@ const Item = React.memo(
   },
 );
 
+// 메인 컴포넌트
 const CombinedCNECMU = () => {
   const navigation = useNavigation();
   const [selectedBranch, setSelectedBranch] = useState(1);
 
+  // 외부에서 branch1Data를 가져오는 것으로 가정
+  // 여기서는 원래 코드에서 가져온다고 가정
+
+  // 아이템 렌더링 함수 - useCallback으로 최적화
   const renderItem = useCallback(
     ({item}) => (
       <Item
@@ -443,7 +487,7 @@ const CombinedCNECMU = () => {
         image={item.image}
         type={item.type}
         branch={selectedBranch}
-        isNew={item.isNew} // isNew prop 추가
+        isNew={item.isNew}
         onPress={() => {
           navigation.navigate('Detail', {...item});
         }}
@@ -452,21 +496,33 @@ const CombinedCNECMU = () => {
     [navigation, selectedBranch],
   );
 
-  const renderContent = () => {
+  // 탭 선택 핸들러
+  const handleTabPress = useCallback(branchNum => {
+    setSelectedBranch(branchNum);
+  }, []);
+
+  // 준비 중 화면 컴포넌트
+  const PreparingView = useMemo(
+    () => (
+      <View style={styles.preparingContainer}>
+        <LinearGradient
+          colors={['rgba(76, 217, 100, 0.1)', 'rgba(76, 217, 100, 0.05)']}
+          style={styles.preparingGradient}>
+          <Icon name="construct-outline" size={80} color="#4CD964" />
+          <Text style={styles.preparingTitle}>준비 중입니다</Text>
+          <Text style={styles.preparingDescription}>
+            더 나은 서비스로 찾아뵙겠습니다{'\n'}조금만 기다려주세요!
+          </Text>
+        </LinearGradient>
+      </View>
+    ),
+    [],
+  );
+
+  // 브랜치에 따른 콘텐츠 렌더링
+  const renderContent = useCallback(() => {
     if (selectedBranch === 2) {
-      return (
-        <View style={styles.preparingContainer}>
-          <LinearGradient
-            colors={['rgba(76, 217, 100, 0.1)', 'rgba(76, 217, 100, 0.05)']}
-            style={styles.preparingGradient}>
-            <Icon name="construct-outline" size={80} color="#4CD964" />
-            <Text style={styles.preparingTitle}>준비 중입니다</Text>
-            <Text style={styles.preparingDescription}>
-              더 나은 서비스로 찾아뵙겠습니다{'\n'}조금만 기다려주세요!
-            </Text>
-          </LinearGradient>
-        </View>
-      );
+      return PreparingView;
     }
 
     return (
@@ -476,16 +532,19 @@ const CombinedCNECMU = () => {
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        initialNumToRender={8}
+        maxToRenderPerBatch={5}
+        windowSize={10}
       />
     );
-  };
+  }, [selectedBranch, renderItem, PreparingView]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, selectedBranch === 1 && styles.selectedTab1]}
-          onPress={() => setSelectedBranch(1)}>
+          onPress={() => handleTabPress(1)}>
           <Icon
             name="home-outline"
             size={24}
@@ -501,7 +560,7 @@ const CombinedCNECMU = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, selectedBranch === 2 && styles.selectedTab2]}
-          onPress={() => setSelectedBranch(2)}>
+          onPress={() => handleTabPress(2)}>
           <Icon
             name="business-outline"
             size={24}
@@ -521,6 +580,7 @@ const CombinedCNECMU = () => {
   );
 };
 
+// 스타일 정의
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -562,7 +622,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
   },
-
   image: {
     width: '100%',
     height: '100%',
@@ -685,23 +744,23 @@ const styles = StyleSheet.create({
   },
   newBadge: {
     position: 'absolute',
-    right: -4, // -6에서 -4로 수정
-    top: -2, // -3에서 -2로 수정
+    right: -4,
+    top: -2,
     backgroundColor: '#FF3B30',
-    borderRadius: 6, // 8에서 6으로 수정
-    minWidth: 12, // 16에서 12로 수정
-    height: 12, // 16에서 12로 수정
+    borderRadius: 6,
+    minWidth: 12,
+    height: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.5, // 1에서 0.5로 수정
+    borderWidth: 0.5,
     borderColor: '#fff',
     zIndex: 1,
   },
   newBadgeText: {
     color: '#fff',
-    fontSize: 8, // 10에서 8로 수정
+    fontSize: 8,
     fontWeight: 'bold',
-    paddingHorizontal: 2, // 3에서 2로 수정
+    paddingHorizontal: 2,
   },
 });
 

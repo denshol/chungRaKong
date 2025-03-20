@@ -11,8 +11,9 @@ import {
   Linking,
   Platform,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
-
+import ImageViewer from 'react-native-image-zoom-viewer';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const {width: SCREEN_WIDTH, height: SCREEN_HEIGHT} = Dimensions.get('window');
@@ -43,10 +44,38 @@ const Detail = ({route, navigation}) => {
   };
 
   const handleImagePress = (image, index, isInstructorImage = false) => {
-    setSelectedImage(image);
+    console.log('Image Press Debug:', {
+      image,
+      index,
+      isInstructorImage,
+      imageType: typeof image,
+    });
+
+    const imageSource =
+      typeof image === 'number'
+        ? image
+        : typeof image === 'string' && image.startsWith('http')
+        ? {uri: image}
+        : image;
+
+    setSelectedImage(imageSource);
     setCurrentModalIndex(index);
     setIsInstructorImage(isInstructorImage);
     setIsImageModalVisible(true);
+    setImageLoading(true);
+  };
+
+  // 이미지뷰어용 이미지 배열 생성
+  const getImagesForViewer = () => {
+    if (isInstructorImage) {
+      return [{url: '', props: {source: selectedImage}}];
+    }
+
+    if (posters && posters.length > 0) {
+      return posters.map(item => ({url: '', props: {source: item}}));
+    }
+
+    return [{url: '', props: {source: poster}}];
   };
 
   const renderGallery = () => {
@@ -119,6 +148,7 @@ const Detail = ({route, navigation}) => {
         showsVerticalScrollIndicator={false}>
         {renderGallery()}
 
+        {/* 이미지 줌 모달 */}
         <Modal
           animationType="fade"
           transparent={true}
@@ -133,61 +163,24 @@ const Detail = ({route, navigation}) => {
               <Icon name="close-circle" size={35} color="#fff" />
             </TouchableOpacity>
 
-            {isInstructorImage ? (
-              <View style={styles.modalImageContainer}>
-                <Image
-                  source={selectedImage}
-                  style={styles.modalImage}
-                  resizeMode="contain"
-                />
-              </View>
-            ) : (
-              <>
-                <FlatList
-                  data={posters}
-                  horizontal
-                  pagingEnabled
-                  showsHorizontalScrollIndicator={false}
-                  initialScrollIndex={currentModalIndex}
-                  getItemLayout={(data, index) => ({
-                    length: SCREEN_WIDTH,
-                    offset: SCREEN_WIDTH * index,
-                    index,
-                  })}
-                  renderItem={({item}) => (
-                    <View style={styles.modalImageContainer}>
-                      <Image
-                        source={item}
-                        style={styles.modalImage}
-                        resizeMode="contain"
-                      />
-                    </View>
-                  )}
-                  keyExtractor={(_, index) => index.toString()}
-                  onMomentumScrollEnd={event => {
-                    const newIndex = Math.round(
-                      event.nativeEvent.contentOffset.x / SCREEN_WIDTH,
-                    );
-                    setCurrentModalIndex(newIndex);
-                  }}
-                />
-
-                {posters && posters.length > 1 && (
-                  <View style={styles.modalPaginationContainer}>
-                    {posters.map((_, index) => (
-                      <View
-                        key={index}
-                        style={[
-                          styles.modalPaginationDot,
-                          currentModalIndex === index &&
-                            styles.modalActivePaginationDot,
-                        ]}
-                      />
-                    ))}
-                  </View>
-                )}
-              </>
-            )}
+            <ImageViewer
+              imageUrls={getImagesForViewer()}
+              index={currentModalIndex}
+              enableSwipeDown={true}
+              onSwipeDown={() => setIsImageModalVisible(false)}
+              backgroundColor="rgba(0, 0, 0, 0.9)"
+              renderIndicator={(currentIndex, allSize) => (
+                <View style={styles.indicatorContainer}>
+                  <Text style={styles.indicatorText}>
+                    {currentIndex}/{allSize}
+                  </Text>
+                </View>
+              )}
+              loadingRender={() => (
+                <ActivityIndicator size="large" color="#59C231" />
+              )}
+              onClick={() => setIsImageModalVisible(false)}
+            />
           </View>
         </Modal>
 
@@ -328,45 +321,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
-  modalImageContainer: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalImage: {
-    width: SCREEN_WIDTH * 0.9,
-    height: SCREEN_HEIGHT * 0.7,
-    resizeMode: 'contain',
-  },
   modalCloseButton: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 50 : 30,
     right: 20,
-    zIndex: 2,
+    zIndex: 10,
     padding: 10,
   },
-  modalPaginationContainer: {
+  indicatorContainer: {
     position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
-  modalPaginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginHorizontal: 4,
-  },
-  modalActivePaginationDot: {
-    backgroundColor: '#fff',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+  indicatorText: {
+    color: '#fff',
+    fontSize: 14,
   },
   textContainer: {
     flex: 1,

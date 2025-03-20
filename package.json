@@ -25,14 +25,17 @@
     "@react-navigation/routers": "^6.1.9",
     "@react-navigation/stack": "^6.4.1",
     "@reduxjs/toolkit": "^2.2.7",
+    "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
     "color-string": "^1.9.1",
     "moment": "^2.30.1",
+    "postcss": "^8.5.1",
     "react": "18.2.0",
     "react-native": "0.74.4",
     "react-native-animatable": "^1.4.0",
     "react-native-config": "^1.5.3",
     "react-native-document-picker": "^9.3.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "^2.22.0",
     "react-native-image-picker": "^7.2.3",
@@ -53,7 +56,9 @@
     "react-native-youtube-iframe": "^2.3.0",
     "react-redux": "^9.1.2",
     "redux-flipper": "^2.0.3",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "swiper": "^11.2.1",
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
