@@ -276,22 +276,6 @@ const branch1Data = [
     type: '청라뮤',
   },
   {
-    id: 'cmu11',
-    title: '우쿨렐레',
-    description: '우쿨렐레 레슨입니다! 가벼운마음으로 도전해보세요!',
-    image: require('../assets/thumbnail/chungRaUkeleleThumb.jpg'),
-    poster: require('../assets/poster/chungRaUkulele.jpg'),
-    curriculum: `\n[이런 분들께 추천드립니다]\n- 우쿨렐레를 처음 시작하시는 분\n- 다양한 장르의 곡을 배우고 싶으신 분\n- 본격적인 연주자를 꿈꾸시는 분\n\n우쿨렐레는 가벼운 마음으로 즐길 수 있는 악기입니다. 기본기를 중시하면서도 학생 개개인의 음악적 취향과 개성을 살리는 교육을 지향합니다.`,
-    instructors: [
-      {
-        name: 'peter',
-        introduction:
-          '\n[교육철학] \n우쿨렐레는 가벼운 마음으로 즐길 수 있는 악기입니다.\n기본기를 중시하면서도 학생 개개인의 음악적 취향과 개성을 살리는 교육을 지향합니다.',
-      },
-    ],
-    type: '청라뮤',
-  },
-  {
     id: 'cmu9',
     title: '합창',
     description: '합창 레슨입니다!',

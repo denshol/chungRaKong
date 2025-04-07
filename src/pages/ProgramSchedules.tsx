@@ -18,11 +18,11 @@ const ProgramSchedule = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image
+        {/* <Image
           source={require('../assets/poster/programHead.png')}
           style={styles.headerImage}
           resizeMode="cover"
-        />
+        /> */}
         <Image
           source={require('../assets/poster/program.jpg')}
           style={styles.contentImage}

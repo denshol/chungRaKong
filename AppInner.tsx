@@ -137,7 +137,7 @@ const MainStack = () => (
         headerTitle: () => (
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Image
-              source={require('./src/assets/profiles/chungRaKong.png')}
+              source={require('./src/assets/chungRaKong.png')}
               style={styles.headerMainLogo}
             />
             <Text style={styles.headerMainTitle}>청라콩문화센터</Text>
